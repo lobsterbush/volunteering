@@ -1,0 +1,1134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VOLUNTEER//HUB · ED.07 · WK.07 / 12</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@800;900&family=Special+Elite&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<style>
+:root {
+  --paper: #F1ECDF;
+  --paper-2: #E9E2D0;
+  --ink: #141414;
+  --riso: #FF4438;
+  --muted: #6B6962;
+  --tape: #FFE9A8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.65; }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.85; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+@keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+@keyframes shake-tiny {
+  0%,100%{transform:rotate(0)}
+  25%{transform:rotate(-0.4deg) translateX(-1px)}
+  75%{transform:rotate(0.4deg) translateX(1px)}
+}
+@keyframes glitch {
+  0%,90%,100%{ transform: translate(0); }
+  92%{ transform: translate(-2px, 1px); }
+  94%{ transform: translate(2px, -1px); }
+  96%{ transform: translate(-1px, 0); }
+}
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.45;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* photocopy noise overlay (multiplies onto everything) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+}
+
+/* paper grain + corner shadow */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 39px, rgba(20,20,20,0.025) 40px),
+    radial-gradient(ellipse at 8% 92%, rgba(20,20,20,0.10), transparent 55%),
+    radial-gradient(ellipse at 95% 5%, rgba(255,68,56,0.05), transparent 55%);
+}
+
+main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 22px 28px 130px;
+  position: relative;
+}
+
+/* ====== MASTHEAD ====== */
+.masthead {
+  border-top: 4px double var(--ink);
+  border-bottom: 4px double var(--ink);
+  padding: 12px 0 10px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 22px;
+  align-items: end;
+  margin-bottom: 18px;
+}
+.masthead h1 {
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-weight: 900;
+  font-size: clamp(48px, 9vw, 104px);
+  line-height: 0.82;
+  letter-spacing: -0.005em;
+}
+.masthead h1 .slash {
+  color: var(--riso);
+  display: inline-block;
+  transform: translateY(-6px) rotate(-3deg);
+  margin: 0 -2px;
+}
+.masthead .meta, .masthead .weather {
+  font-family: 'Special Elite', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  align-self: end;
+  padding-bottom: 4px;
+}
+.masthead .meta div { margin-bottom: 2px; }
+.masthead .meta strong { background: var(--ink); color: var(--paper); padding: 1px 6px; }
+.masthead .weather { text-align: right; }
+.masthead .weather .big {
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 56px;
+  display: block;
+  line-height: 0.9;
+  color: var(--riso);
+  margin-bottom: 2px;
+}
+
+/* ====== SOS BAR ====== */
+.sos {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 10px 14px;
+  margin: 12px 0 18px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  position: relative;
+  transform: rotate(-0.3deg);
+  border-left: 8px solid var(--riso);
+  flex-wrap: wrap;
+}
+.sos .siren {
+  background: var(--riso);
+  color: var(--ink);
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 22px;
+  padding: 2px 10px;
+  letter-spacing: 0.04em;
+  animation: shake-tiny 0.45s infinite;
+}
+.sos .body {
+  flex: 1 1 280px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+}
+.sos .body b { color: var(--riso); }
+.sos .countdown {
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.05em;
+  animation: glitch 6s infinite;
+}
+.sos .claim {
+  background: var(--paper);
+  color: var(--ink);
+  border: 0;
+  padding: 6px 14px;
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+.sos .claim:hover { background: var(--riso); color: var(--ink); }
+
+/* ====== TOP TABS ====== */
+nav.zones {
+  display: flex;
+  margin-bottom: 22px;
+  border-bottom: 2px solid var(--ink);
+}
+nav.zones button {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  border-right: 1px dashed var(--ink);
+  padding: 10px 8px;
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  color: var(--ink);
+  position: relative;
+  text-align: left;
+}
+nav.zones button:last-child { border-right: 0; }
+nav.zones button:hover { background: var(--paper-2); }
+nav.zones button[aria-current="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+nav.zones button[aria-current="true"]::after {
+  content: '←';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--riso);
+}
+nav.zones .num {
+  font-family: 'Special Elite', monospace;
+  font-size: 10px;
+  display: block;
+  letter-spacing: 0;
+  opacity: 0.7;
+}
+
+/* ====== ZONES ====== */
+.zone { display: none; }
+.zone[data-active] { display: block; }
+
+.kicker {
+  font-family: 'Special Elite', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--riso);
+  margin-bottom: 6px;
+}
+
+/* ====== MAP ====== */
+.map-wrap {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 820px) { .map-wrap { grid-template-columns: 1fr; } }
+
+.map {
+  position: relative;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.map-annotations { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; display: block; }
+.maplibre-map { position: absolute; inset: 0; z-index: 1; }
+.maplibre-map .maplibregl-canvas { filter: contrast(1.18) grayscale(1) brightness(1.05) saturate(0); }
+.maplibre-map .maplibregl-control-container { display: none !important; }
+.map .paper-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 2; background: var(--paper); mix-blend-mode: multiply; opacity: 0.5; }
+.map .paper-overlay::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 70%, rgba(255,68,56,0.10), transparent 65%); mix-blend-mode: screen; }
+.maplibregl-marker { cursor: pointer; }
+
+.marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 3;
+}
+.marker .dot {
+  width: 14px; height: 14px;
+  background: var(--riso);
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  position: relative;
+  z-index: 2;
+}
+.marker .ring {
+  position: absolute;
+  inset: -3px;
+  border: 2px solid var(--riso);
+  border-radius: 50%;
+  animation: pulse-ring 1.6s infinite;
+  z-index: 1;
+}
+.marker .label {
+  position: absolute;
+  left: 22px;
+  top: -2px;
+  font-family: 'Special Elite', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: var(--paper);
+  padding: 1px 5px;
+  border: 1px solid var(--ink);
+  letter-spacing: 0.02em;
+}
+.marker.active .label { background: var(--riso); color: var(--ink); }
+
+.map .legend, .map .compass {
+  position: absolute;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+}
+.map .legend {
+  bottom: 8px; left: 8px;
+  padding: 6px 10px;
+  font-family: 'Special Elite', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+.map .legend .swatch { display: inline-block; width: 8px; height: 8px; background: var(--riso); border: 1px solid var(--ink); border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+.map .compass {
+  top: 12px; right: 12px;
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 11px;
+  text-align: center;
+  width: 38px;
+  padding: 4px 0 6px;
+}
+.map .compass .arrow { display: block; font-size: 26px; color: var(--riso); line-height: 0.8; }
+
+/* sidebar */
+.sidebar > * + * { margin-top: 16px; }
+.partner-card {
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+  padding: 12px 14px;
+  position: relative;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: transform 0.12s;
+}
+.partner-card.active { background: var(--ink); color: var(--paper); }
+.partner-card.active h3 { color: var(--riso); }
+.partner-card.active .chip { color: var(--paper); border-color: var(--paper); }
+.partner-card.active .chip.access { background: var(--riso); color: var(--ink); border-color: var(--ink); }
+.partner-card h3 {
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 28px;
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  margin-bottom: 4px;
+}
+.partner-card .role {
+  font-family: 'Special Elite', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.partner-card .meta-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.partner-card .chip {
+  font-size: 10px;
+  font-family: 'Special Elite', monospace;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  padding: 1px 5px;
+}
+.partner-card .chip.access { background: var(--riso); color: var(--ink); border-color: var(--ink); }
+.partner-card .pulse-info {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px;
+  font-family: 'Special Elite', monospace;
+}
+.partner-card .pulse-dot { width: 8px; height: 8px; background: var(--riso); border-radius: 50%; animation: pulse 1.2s infinite; }
+.partner-card .check-in {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  background: var(--riso);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  padding: 6px 0;
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+.partner-card .check-in:hover { background: var(--ink); color: var(--riso); }
+
+/* drift */
+.drift {
+  border: 2px dashed var(--ink);
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  background: repeating-linear-gradient(45deg, var(--paper) 0 8px, rgba(20,20,20,0.04) 8px 9px);
+}
+.drift h4 { font-family: 'Big Shoulders Stencil Display', sans-serif; font-size: 26px; line-height: 1; }
+.drift p { font-family: 'Special Elite', monospace; font-size: 11px; text-transform: uppercase; margin-top: 4px; }
+.drift button {
+  background: var(--ink); color: var(--paper); border: 0;
+  padding: 12px 14px;
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 22px; letter-spacing: 0.06em; cursor: pointer;
+}
+.drift button:hover { background: var(--riso); color: var(--ink); }
+
+/* crew sparks */
+.spark-feed { border: 1.5px solid var(--ink); padding: 10px 12px; background: var(--paper); }
+.spark-feed h4 {
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 22px; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px;
+}
+.spark-feed h4::after { content: ''; flex: 1; border-top: 2px dotted var(--ink); }
+.spark { display: flex; gap: 8px; font-size: 12px; padding: 6px 0; border-bottom: 1px dashed var(--ink); }
+.spark:last-child { border-bottom: 0; }
+.spark .who { font-family: 'Special Elite', monospace; font-size: 11px; background: var(--ink); color: var(--paper); padding: 0 5px; height: fit-content; text-transform: uppercase; }
+.spark .what { flex: 1; }
+.spark .me-too {
+  background: var(--paper); border: 1px solid var(--ink); cursor: pointer;
+  font-family: 'Special Elite', monospace; font-size: 10px;
+  padding: 2px 6px; text-transform: uppercase; align-self: start;
+}
+.spark .me-too:hover { background: var(--riso); }
+
+/* margin notes */
+.margin-note {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 22px, rgba(20,20,20,0.06) 22px 23px),
+    #FFF6C7;
+  padding: 10px 12px;
+  border-left: 3px solid var(--riso);
+  font-family: 'Special Elite', monospace;
+  font-size: 12px;
+  position: relative;
+  transform: rotate(-0.4deg);
+}
+.margin-note::before {
+  content: 'MARGIN NOTE //';
+  display: block;
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 12px; letter-spacing: 0.06em;
+  color: var(--riso); margin-bottom: 4px;
+}
+
+/* ====== CALL SHEET ====== */
+.callsheet {
+  margin-top: 28px;
+  border: 1.5px solid var(--ink);
+  padding: 22px 22px 28px;
+  position: relative;
+  background: var(--paper);
+}
+.callsheet::before {
+  content: 'WK.07';
+  position: absolute;
+  top: -12px; left: 24px;
+  background: var(--paper);
+  padding: 0 10px;
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 18px; letter-spacing: 0.06em;
+}
+.callsheet header { text-align: center; border-bottom: 3px solid var(--ink); padding-bottom: 8px; margin-bottom: 14px; }
+.callsheet header h2 {
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: clamp(40px, 7vw, 64px);
+  letter-spacing: 0.02em; line-height: 0.9;
+}
+.callsheet header h2 .red { color: var(--riso); }
+.callsheet header .strap { font-family: 'Special Elite', monospace; font-size: 11px; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.05em; }
+.callsheet .columns { columns: 3; column-gap: 22px; column-rule: 1px solid var(--ink); font-size: 12px; }
+@media (max-width: 720px) { .callsheet .columns { columns: 1; } }
+.callsheet .columns h3 { font-family: 'Big Shoulders Stencil Display', sans-serif; font-size: 18px; margin-bottom: 4px; break-after: avoid; }
+.callsheet .columns p { margin-bottom: 12px; break-inside: avoid; }
+.callsheet .columns .sig { font-family: 'Special Elite', monospace; font-size: 10px; text-transform: uppercase; color: var(--muted); }
+.callsheet .stamp {
+  position: absolute;
+  bottom: -14px; right: 24px;
+  background: var(--riso); color: var(--ink);
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 18px; padding: 4px 10px; letter-spacing: 0.04em;
+  transform: rotate(-3deg); border: 2px solid var(--ink);
+}
+
+/* ====== WALL ====== */
+.wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 22px; }
+.postcard {
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  padding: 12px;
+  position: relative;
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.postcard:nth-child(3n) { transform: rotate(-1deg); }
+.postcard:nth-child(3n+1) { transform: rotate(0.7deg); }
+.postcard:nth-child(3n+2) { transform: rotate(-0.4deg); }
+.postcard .stamp {
+  position: absolute; top: -10px; right: 10px;
+  background: var(--riso); color: var(--ink);
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 11px; padding: 2px 6px; letter-spacing: 0.05em;
+  border: 1.5px solid var(--ink);
+}
+.postcard .img { height: 140px; background: var(--ink); position: relative; margin-bottom: 8px; overflow: hidden; }
+.postcard .img.h1 { background: radial-gradient(circle at center, var(--riso) 30%, transparent 32%) 0 0/8px 8px, var(--ink); }
+.postcard .img.h2 { background: radial-gradient(circle at center, var(--paper) 22%, transparent 24%) 0 0/6px 6px, var(--ink); }
+.postcard .img.h3 { background: repeating-linear-gradient(45deg, var(--ink) 0 3px, var(--paper) 3px 6px); }
+.postcard .img.h4 { background: radial-gradient(circle at 30% 40%, var(--paper) 22%, transparent 24%) 0 0/10px 10px, var(--riso); }
+.postcard .img.h5 { background: radial-gradient(circle at 70% 60%, var(--ink) 25%, transparent 26%) 0 0/12px 12px, var(--paper); }
+.postcard .img.h6 { background: linear-gradient(180deg, var(--riso) 0 30%, var(--ink) 30% 65%, var(--paper) 65%); }
+.postcard .meta { font-family: 'Special Elite', monospace; font-size: 10px; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.03em; }
+.postcard p { font-size: 12px; line-height: 1.45; }
+.postcard .who { margin-top: 8px; font-family: 'Special Elite', monospace; font-size: 10px; text-transform: uppercase; border-top: 1px dashed var(--ink); padding-top: 4px; }
+
+.wall-section-h {
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 36px; margin: 28px 0 12px;
+}
+
+/* ====== LEDGER ====== */
+.ledger {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  border: 1.5px solid var(--ink);
+  padding: 22px;
+  background: var(--paper);
+}
+.ledger h2 {
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: clamp(40px, 6vw, 56px);
+  line-height: 0.95; margin-bottom: 4px;
+}
+.ledger .strap { font-family: 'Special Elite', monospace; font-size: 11px; text-transform: uppercase; margin-bottom: 14px; }
+.ledger pre {
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  white-space: pre; overflow-x: auto; line-height: 1.6;
+}
+.ledger .total {
+  margin-top: 14px; padding-top: 10px;
+  border-top: 2px dashed var(--ink);
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 24px;
+}
+.ledger .total b { color: var(--riso); }
+.ledger .progress {
+  height: 16px; border: 2px solid var(--ink); margin-top: 8px;
+  background: var(--paper); position: relative; overflow: hidden;
+}
+.ledger .progress::after {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(45deg, var(--ink) 0 3px, transparent 3px 6px);
+  width: 75.8%;
+}
+
+/* ====== YOU ====== */
+.you { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 720px) { .you { grid-template-columns: 1fr; } }
+.you-block {
+  border: 1.5px solid var(--ink);
+  padding: 18px;
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.you-block h3 { font-family: 'Big Shoulders Stencil Display', sans-serif; font-size: 28px; margin-bottom: 8px; }
+.big-num {
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: clamp(64px, 10vw, 96px);
+  line-height: 0.85; color: var(--riso);
+  margin: 6px 0 4px;
+}
+.big-num small { font-size: 0.4em; color: var(--ink); margin-left: 6px; }
+
+.patches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
+.patch {
+  aspect-ratio: 1;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center;
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 12px; line-height: 1.05;
+  padding: 8px; position: relative; letter-spacing: 0.04em;
+}
+.patch.earned { background: var(--riso); color: var(--ink); }
+.patch.locked { color: var(--muted); border-style: dashed; }
+.patch::before {
+  content: ''; position: absolute; inset: 4px;
+  border: 1px dashed currentColor; border-radius: 50%;
+}
+
+.scrap-preview {
+  height: 200px;
+  border: 1px dashed var(--ink);
+  position: relative;
+  background:
+    linear-gradient(135deg, transparent 49%, var(--ink) 49% 50%, transparent 51%) 0 0/8px 8px,
+    var(--paper);
+  overflow: hidden;
+}
+.scrap-preview .label {
+  position: absolute; bottom: 8px; left: 8px;
+  background: var(--ink); color: var(--paper);
+  padding: 2px 6px;
+  font-family: 'Special Elite', monospace; font-size: 10px; text-transform: uppercase;
+}
+.scrap-preview .pages {
+  position: absolute; inset: 16px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+}
+.scrap-preview .pages > div {
+  background: var(--paper); border: 1px solid var(--ink);
+  position: relative;
+}
+.scrap-preview .pages > div:nth-child(odd)::after {
+  content: ''; position: absolute; inset: 4px;
+  background: repeating-linear-gradient(0deg, var(--ink) 0 1px, transparent 1px 6px);
+  opacity: 0.4;
+}
+.scrap-preview .pages > div:nth-child(even)::after {
+  content: ''; position: absolute; inset: 6px;
+  background: radial-gradient(circle, var(--ink) 24%, transparent 26%) 0 0/8px 8px;
+  opacity: 0.3;
+}
+
+/* ====== INSTRUCTIONS PANEL ====== */
+.instr {
+  border: 1.5px dashed var(--ink);
+  padding: 14px 16px;
+  margin-top: 14px;
+  background: repeating-linear-gradient(0deg, transparent 0 22px, rgba(20,20,20,0.04) 22px 23px), var(--paper);
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  line-height: 1.55;
+  position: relative;
+}
+.instr-h {
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 18px; letter-spacing: 0.06em; margin-bottom: 8px;
+  color: var(--riso);
+}
+.instr ol { margin: 0 0 10px 18px; padding: 0; }
+.instr li { margin-bottom: 6px; }
+.instr li b { font-family: 'Special Elite', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.instr p { font-family: 'Special Elite', monospace; font-size: 11px; text-transform: uppercase; line-height: 1.5; color: var(--muted); margin: 0; }
+
+/* ====== TICKER ====== */
+.ticker {
+  margin-top: 32px;
+  background: var(--ink); color: var(--paper);
+  padding: 8px 0; overflow: hidden;
+  border-top: 2px solid var(--riso);
+  border-bottom: 2px solid var(--riso);
+}
+.ticker .track {
+  display: inline-block; white-space: nowrap;
+  animation: ticker 60s linear infinite;
+  font-family: 'Special Elite', monospace; font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.ticker .track span { padding: 0 28px; }
+.ticker .track .red { color: var(--riso); }
+
+/* ====== FOOTER NAV ====== */
+footer.tabs {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--paper);
+  border-top: 3px double var(--ink);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  z-index: 800;
+  box-shadow: 0 -6px 0 rgba(20,20,20,0.04);
+}
+footer.tabs button {
+  border: 0; background: transparent;
+  border-right: 1px dashed var(--ink);
+  padding: 10px 4px;
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 18px; cursor: pointer; text-align: center;
+  letter-spacing: 0.04em;
+}
+footer.tabs button:last-child { border-right: 0; }
+footer.tabs button[aria-current="true"] { background: var(--ink); color: var(--paper); }
+footer.tabs button .num {
+  display: block; font-family: 'Special Elite', monospace;
+  font-size: 9px; letter-spacing: 0; opacity: 0.7;
+}
+
+/* caret */
+.caret::after {
+  content: '_'; display: inline-block; margin-left: 2px;
+  animation: blink 1s steps(1) infinite; color: var(--riso);
+}
+</style>
+</head>
+<body>
+<main>
+  <!-- ====== MASTHEAD ====== -->
+  <header class="masthead">
+    <h1>VOLUNTEER<span class="slash">//</span>HUB</h1>
+    <div class="meta">
+      <div><strong>EDITION 07</strong></div>
+      <div>WK 07 / SEMESTER 1 / 2026</div>
+      <div>MON 06:00 — SUN 18:00</div>
+      <div>MON2000 // FLAGSHIP RICH EXPERIENCES</div>
+      <div>RUN BY THE COHORT, NOT FOR IT</div>
+    </div>
+    <div class="weather">
+      <span class="big">☁︎</span>
+      cohort weather:
+      <br>OVERCAST W/<br>FOOD-DRIVE FATIGUE
+    </div>
+  </header>
+
+  <!-- ====== SOS ====== -->
+  <div class="sos" role="alert" aria-live="polite">
+    <span class="siren">SOS</span>
+    <div class="body">
+      <b>ST KILDA MUMS</b> — 14 hrs of sorting needed before <b>FRI 17:00</b>. Cot-rehoming backlog. Tea provided.
+    </div>
+    <div class="countdown" id="countdown">02:18:42</div>
+    <button class="claim">CLAIM SHIFT →</button>
+  </div>
+
+  <!-- ====== TOP TABS ====== -->
+  <nav class="zones" role="tablist" aria-label="Zone selector">
+    <button data-zone="map" aria-current="true"><span class="num">[01]</span>THE MAP</button>
+    <button data-zone="wall"><span class="num">[02]</span>THE WALL</button>
+    <button data-zone="ledger"><span class="num">[03]</span>THE LEDGER</button>
+    <button data-zone="you"><span class="num">[04]</span>YOU</button>
+  </nav>
+
+  <!-- ====== THE MAP ====== -->
+  <section class="zone" data-zone="map" data-active>
+    <div class="map-wrap">
+      <div class="map" id="map" aria-label="Map of partner sites in Melbourne">
+        <div id="maplibre-map" class="maplibre-map"></div>
+        <div class="paper-overlay"></div>
+        <svg class="map-annotations" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <text x="32" y="48" font-family="Special Elite, monospace" font-size="13" fill="#1a1a1a" letter-spacing="0.1em">MELBOURNE COHORT</text>
+          <text x="32" y="64" font-family="Special Elite, monospace" font-size="10" fill="#6B6962">— SEM 1 / 2026 —</text>
+          <path d="M 220 110 Q 200 140, 158 158" stroke="#FF4438" stroke-width="2.5" fill="none"/>
+          <path d="M 158 158 l 12 -2 l -3 9 z" fill="#FF4438"/>
+          <text x="226" y="104" font-family="Special Elite, monospace" font-size="12" fill="#FF4438">"start here"</text>
+          <text x="640" y="556" font-family="Special Elite, monospace" font-size="11" fill="#6B6962" letter-spacing="0.05em">FIVE PARTNERS · ONE SEMESTER</text>
+        </svg>
+        <div class="legend">
+          <div><span class="swatch"></span>LIVE PULSE = SOMEONE JUST CHECKED IN</div>
+          <div style="margin-top:2px;">CARTO BASE · RISO FILTER · © OPENSTREETMAP</div>
+        </div>
+        <div class="compass"><span class="arrow">↑</span>N</div>
+      </div>
+
+      <aside class="sidebar" aria-label="Selected partner & sparks">
+        <div class="kicker">// LIVE NOW — 5 PARTNER SITES</div>
+        <article class="partner-card active" id="partnerCard">
+          <h3>ST KILDA MUMS</h3>
+          <div class="role">SORTING / REHOMING — 4 HR SHIFT</div>
+          <div class="meta-row">
+            <span class="chip access">WHEELCHAIR ✓</span>
+            <span class="chip">TRAM 96</span>
+            <span class="chip">BIKE PARK</span>
+          </div>
+          <div class="pulse-info">
+            <span class="pulse-dot"></span>
+            <span>3 ON THE FLOOR NOW · 14 HRS NEEDED</span>
+          </div>
+          <button class="check-in">CHECK IN →</button>
+        </article>
+
+        <div class="drift">
+          <div>
+            <h4>DRIFT</h4>
+            <p>SHOW ME SOMEWHERE UNFAMILIAR</p>
+          </div>
+          <button id="driftBtn">⟳ ROLL</button>
+        </div>
+
+        <div class="spark-feed" aria-label="Crew sparks">
+          <h4>CREW SPARKS</h4>
+          <div class="spark">
+            <span class="who">@vol_037</span>
+            <span class="what">heading to FoodFilled SAT 09:30 — anyone? bringing a thermos.</span>
+            <button class="me-too">ME TOO</button>
+          </div>
+          <div class="spark">
+            <span class="who">@vol_112</span>
+            <span class="what">SisterWorks textiles WED arvo. 2 spots. lift from Clayton avail.</span>
+            <button class="me-too">ME TOO</button>
+          </div>
+          <div class="spark">
+            <span class="who">@vol_004</span>
+            <span class="what">night sort @ St Kilda Mums THU 19:00. dress warm.</span>
+            <button class="me-too">ME TOO</button>
+          </div>
+        </div>
+
+        <div class="margin-note">
+          ★ Tip from a previous cohort: ask for Anwar at SisterWorks — he runs the Wednesday textiles bench. The kettle is in the back left. Trams stop ~9:30pm; don't miss the 96.
+        </div>
+      </aside>
+    </div>
+
+    <!-- CALL SHEET -->
+    <article class="callsheet">
+      <header>
+        <div class="kicker">PRINTED MONDAY 06:00 — TEAR ALONG DOTTED LINE</div>
+        <h2>THE <span class="red">CALL</span> SHEET</h2>
+        <div class="strap">// 47 OPEN SHIFTS · 5 PARTNERS · WK.07 OF 12 //</div>
+      </header>
+      <div class="columns">
+        <h3>MON 04 / FOOD</h3>
+        <p>FoodFilled needs 6 volunteers 14:00–17:00 for the Brunswick rescue run. Closed shoes. Lifting required.<br><span class="sig">— K. (vol coord.)</span></p>
+
+        <h3>TUE 05 / TEXTILES</h3>
+        <p>SisterWorks Footscray. Cutting + packaging for an Eid order. 10:00–13:00. Kettle is on. New volunteers welcome.<br><span class="sig">— A.</span></p>
+
+        <h3>WED 06 / NIGHT SORT</h3>
+        <p>St Kilda Mums after-hours. 19:00–21:30. Cots, prams, baby clothes. Tea + warm socks if you've got 'em.<br><span class="sig">— J.</span></p>
+
+        <h3>THU 07 / KITCHEN</h3>
+        <p>MSA Wholefoods, Clayton. 11:30–14:30 prep + service. Free meal at end of shift. Hairnets supplied.<br><span class="sig">— L.</span></p>
+
+        <h3>FRI 08 / OUTREACH</h3>
+        <p>Dixon House neighbourhood drop-in. Conversation, tea, bingo. 13:00–16:00. Mandarin speakers especially welcome.<br><span class="sig">— P.</span></p>
+
+        <h3>SAT 09 / RESCUE</h3>
+        <p>FoodFilled produce sort, Footscray markets. 06:30–09:30. Early start. The coffee cart on the corner is recommended.<br><span class="sig">— K.</span></p>
+
+        <h3>SUN 10 / OPEN HOUSE</h3>
+        <p>SisterWorks open house. Bring a friend. No volunteer hours logged — this one's for connection.<br><span class="sig">— A.</span></p>
+
+        <h3>EYES OPEN</h3>
+        <p>WK.06 wildcard week incoming — drift button only. Plan your unfamiliar accordingly.</p>
+      </div>
+      <span class="stamp">EDITED BY THE COHORT</span>
+    </article>
+  </section>
+
+  <!-- ====== THE WALL ====== -->
+  <section class="zone" data-zone="wall">
+    <div class="kicker">// 36 POSTCARDS THIS WEEK · 12 MARGIN NOTES · 2 SOS</div>
+    <div class="wall">
+      <div class="postcard">
+        <div class="stamp">WK.07</div>
+        <div class="img h1"></div>
+        <div class="meta">ST KILDA MUMS · 4 HRS</div>
+        <p>Sorted 31 cot kits. The smallest jumper had a hand-stitched cat on it. Someone made that. Someone else will wear it.</p>
+        <div class="who">— @vol_037</div>
+      </div>
+      <div class="postcard">
+        <div class="stamp">WK.07</div>
+        <div class="img h2"></div>
+        <div class="meta">SISTERWORKS · 3 HRS</div>
+        <p>Anwar walked me through the cutting bench. He pointed at the kettle three times before I understood. Tea, then talk. That's the order.</p>
+        <div class="who">— @vol_004</div>
+      </div>
+      <div class="postcard">
+        <div class="stamp">WK.07</div>
+        <div class="img h3"></div>
+        <div class="meta">FOODFILLED · 3 HRS</div>
+        <p>Brunswick rescue run. We saved 41kg of bananas from a skip. They will become 200 lunchboxes. The maths of food is mostly maths.</p>
+        <div class="who">— @vol_112</div>
+      </div>
+      <div class="postcard">
+        <div class="stamp">WK.07</div>
+        <div class="img h4"></div>
+        <div class="meta">DIXON HOUSE · 3 HRS</div>
+        <p>Played bingo in three languages. Won nothing. Lost time well.</p>
+        <div class="who">— @vol_222</div>
+      </div>
+      <div class="postcard">
+        <div class="stamp">WK.06</div>
+        <div class="img h5"></div>
+        <div class="meta">MSA WHOLEFOODS · 3 HRS</div>
+        <p>Hairnet hour 1. Service hour 2. Talked to a PhD student about Foucault while peeling carrots. Hairnet hour 3.</p>
+        <div class="who">— @vol_059</div>
+      </div>
+      <div class="postcard">
+        <div class="stamp">WK.06</div>
+        <div class="img h6"></div>
+        <div class="meta">ST KILDA MUMS · 4 HRS</div>
+        <p>The pram had a sticker that said "Frankie, age 1, now ready for someone else." I cried in the carpark a little.</p>
+        <div class="who">— @vol_148</div>
+      </div>
+    </div>
+
+    <h3 class="wall-section-h">// MARGIN NOTES</h3>
+    <div style="display:grid; gap:14px; grid-template-columns: repeat(auto-fill,minmax(260px,1fr));">
+      <div class="margin-note">SISTERWORKS // ask for Anwar Wednesdays. Kettle in the back left. Trams stop ~9:30pm — don't miss the 96.</div>
+      <div class="margin-note">ST KILDA MUMS // wheelchair access via the side roller door. Front step is 14cm. Email coordinator first time.</div>
+      <div class="margin-note">FOODFILLED // wear closed shoes you don't love. The Brunswick run gets fruit-juice-y. Bring a water bottle.</div>
+      <div class="margin-note">MSA WHOLEFOODS // free meal after 3hr shift. Vegan default. Tell them about allergies BEFORE service starts.</div>
+      <div class="margin-note">DIXON HOUSE // bingo cards live in the second drawer. Mandarin numbers cheat-sheet behind the kettle.</div>
+    </div>
+  </section>
+
+  <!-- ====== THE LEDGER ====== -->
+  <section class="zone" data-zone="ledger">
+    <div class="ledger">
+      <div class="kicker">// PUBLIC, APPEND-ONLY, NEVER LEADERBOARDED</div>
+      <h2>THE LEDGER</h2>
+      <div class="strap">HOURS GIVEN BY THE COHORT, BY ORG &amp; BY WEEK</div>
+<pre>
+  PARTNER          WK01  WK02  WK03  WK04  WK05  WK06  WK07   TOTAL
+  ─────────────────────────────────────────────────────────────────
+  ST KILDA MUMS     14    18    22    19    24    27    31     155
+  SISTERWORKS        6    12    16    14    18    21    24     111
+  FOODFILLED         8    10    14    18    20    18    22     110
+  MSA WHOLEFOODS    12    14    14    16    16    17    19     108
+  DIXON HOUSE        4     6     8     8    10    12    14      62
+  ─────────────────────────────────────────────────────────────────
+  WEEKLY TOTAL      44    60    74    75    88    95   110     546
+
+  ACCESSIBILITY     CHECK-INS THAT FLAGGED A NEED         WK07: 8 / 31
+  LOTE PLACEMENTS   SHIFTS IN A LANGUAGE OTHER THAN EN    WK07: 6
+  BIKE COMMUTES     SELF-REPORTED                         WK07: 11
+  NIGHT SHIFTS      AFTER 18:00 START                     WK07: 4
+  WHEELCHAIR ACCESS NODES VERIFIED THIS WEEK              4 / 5
+</pre>
+      <div class="total">COHORT TOTAL THIS SEM: <b>546 HRS</b> / TARGET 720 / WK.07 OF 12</div>
+      <div class="progress" aria-label="75.8% of cohort target reached"></div>
+      <p style="font-family:'Special Elite',monospace; font-size:11px; text-transform:uppercase; margin-top:10px; color: var(--muted);">
+        ★ Hours are credited to organisations, not individuals. Per-student totals are visible only to the unit team and to you. There is no leaderboard. There never will be.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====== YOU ====== -->
+  <section class="zone" data-zone="you">
+    <div class="you">
+      <div class="you-block">
+        <div class="kicker">// YOU · @VOL_037</div>
+        <h3>HOURS</h3>
+        <div class="big-num">14<small>/ 24 PLACEMENT</small></div>
+        <p style="font-family:'Special Elite',monospace; font-size:11px; text-transform:uppercase;">
+          10 hrs left to meet the placement requirement<br>
+          · 3 partners visited · 5 postcards posted · 1 SOS claimed
+        </p>
+      </div>
+
+      <div class="you-block">
+        <h3>PATCHES</h3>
+        <p style="font-family:'Special Elite',monospace; font-size:10px; text-transform:uppercase; color: var(--muted); margin-bottom: 4px;">// IRON-ON, NOT BADGES. NOT LEADERBOARDED.</p>
+        <div class="patches">
+          <div class="patch earned">FIRST<br>SHIFT</div>
+          <div class="patch earned">BIKE<br>COMMUTE</div>
+          <div class="patch earned">LOTE<br>PLACEMENT</div>
+          <div class="patch locked">NIGHT<br>SHIFT</div>
+          <div class="patch locked">SOS<br>CLAIM</div>
+          <div class="patch locked">DRIFTER</div>
+        </div>
+        <div class="instr">
+          <p class="instr-h">// HOW PATCHES WORK</p>
+          <ol>
+            <li><b>FIRST SHIFT</b> — earned at first check-out from any partner.</li>
+            <li><b>BIKE COMMUTE</b> — earned when you tick "bike" on transport at check-in.</li>
+            <li><b>LOTE PLACEMENT</b> — earned for any shift conducted in a language other than English.</li>
+            <li><b>NIGHT SHIFT</b> — earned for any check-in that starts after 18:00.</li>
+            <li><b>SOS CLAIM</b> — earned when you claim and complete a partner SOS before its deadline.</li>
+            <li><b>DRIFTER</b> — earned for three shifts at partners you'd never visited before, found via the drift button.</li>
+          </ol>
+          <p>★ Patches are tactile reminders, not currencies. They do not unlock features, are not visible to partner organisations, and never appear on a leaderboard. They live only in your scrapbook.</p>
+        </div>
+      </div>
+
+      <div class="you-block" style="grid-column: 1 / -1;">
+        <h3>SCRAPBOOK / IN PROGRESS</h3>
+        <p style="font-family:'Special Elite',monospace; font-size:11px; text-transform:uppercase; margin-bottom: 8px; color: var(--muted);">
+          AUTO-COMPILED FROM YOUR POSTCARDS, REFLECTION CARDS &amp; HOURS · PRINT-READY WK.12
+        </p>
+        <div class="scrap-preview">
+          <div class="pages">
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+          </div>
+          <div class="label">5 PAGES · UPDATES SUNDAY 18:00 · PAGED.JS PRINT EXPORT</div>
+        </div>
+        <div class="instr">
+          <p class="instr-h">// HOW THE SCRAPBOOK WORKS</p>
+          <ol>
+            <li><b>AUTO-COMPILED</b> from your postcards (chronological), reflection cards, hours-by-partner, and patches earned.</li>
+            <li><b>SNAPSHOTS</b> every Sunday at 18:00 when the week's edition closes — scroll back through prior weeks at any time.</li>
+            <li><b>BLANK PAGES</b> — three at the back for handwritten notes you photograph and upload.</li>
+            <li><b>PRINT-READY</b> at the end of the semester (Wk 12) as an A5 stapled booklet PDF, generated server-side via Paged.js.</li>
+            <li><b>PRIVATE</b> — only you and the unit team see your scrapbook. A separate cohort scrapbook is exported with consenting postcards only.</li>
+          </ol>
+          <p>★ The scrapbook is the unit's reflective-assessment artefact. Nothing else is required for the reflection component of MON2000.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== TICKER ====== -->
+  <div class="ticker" aria-hidden="true">
+    <div class="track">
+      <span>// LIVE</span>
+      <span class="red">3 VOLS ON THE FLOOR @ ST KILDA MUMS</span>
+      <span>// SOS — 14 HRS NEEDED BY FRI 17:00</span>
+      <span class="red">// DRIFT BUTTON FAVOURED THIS WEEK: SISTERWORKS TEXTILES</span>
+      <span>// COHORT WEATHER: OVERCAST W/ FOOD-DRIVE FATIGUE</span>
+      <span class="red">// NEW MARGIN NOTE @ DIXON HOUSE</span>
+      <span>// WK.06 WILDCARD WEEK INCOMING</span>
+      <!-- duplicate for seamless loop -->
+      <span>// LIVE</span>
+      <span class="red">3 VOLS ON THE FLOOR @ ST KILDA MUMS</span>
+      <span>// SOS — 14 HRS NEEDED BY FRI 17:00</span>
+      <span class="red">// DRIFT BUTTON FAVOURED THIS WEEK: SISTERWORKS TEXTILES</span>
+      <span>// COHORT WEATHER: OVERCAST W/ FOOD-DRIVE FATIGUE</span>
+      <span class="red">// NEW MARGIN NOTE @ DIXON HOUSE</span>
+      <span>// WK.06 WILDCARD WEEK INCOMING</span>
+    </div>
+  </div>
+
+  <!-- COLOPHON -->
+  <p style="font-family:'Special Elite',monospace; font-size:10px; text-transform:uppercase; color: var(--muted); margin-top: 24px; text-align:center;">
+    COLOPHON // SET IN BIG SHOULDERS STENCIL DISPLAY, SPECIAL ELITE &amp; DM MONO. PHOTOCOPIED ON RECYCLED PIXELS. NO TRACKERS, NO LEADERBOARDS, NO PURPLE GRADIENTS. <span class="caret"></span>
+  </p>
+</main>
+
+<footer class="tabs" role="tablist" aria-label="Zone selector (mobile)">
+  <button data-zone="map" aria-current="true"><span class="num">[01]</span>MAP</button>
+  <button data-zone="wall"><span class="num">[02]</span>WALL</button>
+  <button data-zone="ledger"><span class="num">[03]</span>LEDGER</button>
+  <button data-zone="you"><span class="num">[04]</span>YOU</button>
+</footer>
+
+<script>
+// ===== zone switching =====
+const zones = document.querySelectorAll('section.zone');
+function go(zone) {
+  zones.forEach(s => s.toggleAttribute('data-active', s.dataset.zone === zone));
+  document.querySelectorAll('nav.zones button, footer.tabs button').forEach(b => {
+    b.setAttribute('aria-current', b.dataset.zone === zone ? 'true' : 'false');
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+document.querySelectorAll('nav.zones button, footer.tabs button').forEach(b => {
+  b.addEventListener('click', () => go(b.dataset.zone));
+});
+
+// ===== SOS countdown =====
+(function tickCountdown() {
+  const el = document.getElementById('countdown');
+  if (!el) return;
+  const start = Date.now() + (2 * 3600 + 18 * 60 + 42) * 1000;
+  setInterval(() => {
+    const diff = Math.max(0, start - Date.now());
+    const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+    el.textContent = `${h}:${m}:${s}`;
+  }, 1000);
+})();
+
+// ===== partner data =====
+const partners = [
+  { name: 'ST KILDA MUMS',  role: 'SORTING / REHOMING — 4 HR SHIFT',   chips: ['WHEELCHAIR ✓','TRAM 96','BIKE PARK'],     pulse: '3 ON THE FLOOR NOW · 14 HRS NEEDED' },
+  { name: 'SISTERWORKS',    role: 'TEXTILES BENCH — 3 HR SHIFT',        chips: ['LIFT ✓','TRAIN F\'SCRAY','TEA'],          pulse: '2 ON THE FLOOR NOW · 8 HRS NEEDED'  },
+  { name: 'FOODFILLED',     role: 'RESCUE RUN — 3 HR SHIFT',            chips: ['DRIVE','LIFT REQ','EARLY START'],         pulse: '5 ON THE FLOOR NOW · 12 HRS NEEDED' },
+  { name: 'MSA WHOLEFOODS', role: 'KITCHEN PREP — 3 HR SHIFT',          chips: ['WHEELCHAIR ✓','BUS','MEAL INCL'],         pulse: '4 ON THE FLOOR NOW · 6 HRS NEEDED'  },
+  { name: 'DIXON HOUSE',    role: 'NEIGHBOURHOOD DROP-IN — 3 HR SHIFT', chips: ['MANDARIN','TRAM 86','TEA'],               pulse: '1 ON THE FLOOR NOW · 9 HRS NEEDED'  },
+];
+const partnerCard = document.getElementById('partnerCard');
+function renderPartner(i) {
+  const p = partners[i];
+  partnerCard.querySelector('h3').textContent = p.name;
+  partnerCard.querySelector('.role').textContent = p.role;
+  partnerCard.querySelector('.meta-row').innerHTML = p.chips.map((c, idx) =>
+    `<span class="chip ${idx===0?'access':''}">${c}</span>`).join('');
+  partnerCard.querySelector('.pulse-info').innerHTML =
+    `<span class="pulse-dot"></span><span>${p.pulse}</span>`;
+}
+function setActive(i) {
+  document.querySelectorAll('.marker').forEach(m =>
+    m.classList.toggle('active', +m.dataset.org === i));
+  renderPartner(i);
+}
+
+// ===== MapLibre map (free CARTO basemap, riso-filtered) =====
+// To swap for Mapbox GL: replace `maplibregl` with `mapboxgl`, set
+//   mapboxgl.accessToken = 'YOUR_TOKEN';
+// then load Mapbox's JS/CSS in <head> and use a Mapbox style URL such as
+//   'mapbox://styles/mapbox/light-v11'.
+const partnerCoords = [
+  [145.0050, -37.8675], // St Kilda Mums  (Carnegie / Caulfield-ish)
+  [144.8970, -37.8000], // SisterWorks    (Footscray)
+  [144.9605, -37.7700], // FoodFilled     (Brunswick)
+  [145.1362, -37.9105], // MSA Wholefoods (Monash Clayton)
+  [145.2400, -37.9856], // Dixon House    (Doveton)
+];
+if (typeof maplibregl !== 'undefined') {
+  const map = new maplibregl.Map({
+    container: 'maplibre-map',
+    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+    center: [145.05, -37.86],
+    zoom: 10.1,
+    interactive: true,
+    attributionControl: false,
+  });
+  map.on('load', () => {
+    partnerCoords.forEach((coord, i) => {
+      const el = document.createElement('div');
+      el.className = 'marker' + (i === 0 ? ' active' : '');
+      el.dataset.org = String(i);
+      el.innerHTML =
+        `<span class="ring"${i > 0 ? ` style="animation-delay: -${(i * 0.3).toFixed(1)}s"` : ''}></span>` +
+        '<span class="dot"></span>' +
+        `<span class="label">${partners[i].name}</span>`;
+      el.addEventListener('click', (e) => { e.stopPropagation(); setActive(i); });
+      new maplibregl.Marker({ element: el, anchor: 'center' })
+        .setLngLat(coord)
+        .addTo(map);
+    });
+  });
+}
+
+// ===== drift button =====
+document.getElementById('driftBtn')?.addEventListener('click', () => {
+  const current = +document.querySelector('.marker.active')?.dataset.org;
+  const candidates = partners.map((_, i) => i).filter(i => i !== current);
+  const next = candidates[Math.floor(Math.random() * candidates.length)];
+  setActive(next);
+  partnerCard.style.animation = 'shake-tiny 0.25s 2';
+  setTimeout(() => partnerCard.style.animation = '', 600);
+});
+
+// ===== ME TOO toggle =====
+document.querySelectorAll('.me-too').forEach(b => {
+  b.addEventListener('click', () => {
+    if (b.textContent === 'ME TOO') {
+      b.textContent = 'IN ✓';
+      b.style.background = 'var(--riso)';
+    } else {
+      b.textContent = 'ME TOO';
+      b.style.background = 'var(--paper)';
+    }
+  });
+});
+</script>
+</body>
+</html>
