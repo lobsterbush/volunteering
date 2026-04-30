@@ -14,13 +14,13 @@ MapLibre GL JS with the free CARTO Positron basemap, riso-filtered (grayscale + 
 Brutalist DIY-zine, riso-print accents. Paper-white / ink-black / one fluoro accent (`#FF4438` riso red). Display: Big Shoulders Stencil Display. Accent: Special Elite. Body: DM Mono. Photocopy noise overlay, halftone postcards, masking-tape headers, snap-cut motion. No purple gradients. No Inter.
 
 ## Zones (4-tab IA)
-1. **The Map** — counter-cartographic Melbourne, pulsing partner pins, live SOS, drift button, crew sparks, Monday call-sheet broadsheet.
+1. **The Map** — counter-cartographic Melbourne, pulsing partner pins, live SOS, crew sparks, Monday call-sheet broadsheet.
 2. **The Wall** — postcards + margin notes from the cohort.
 3. **The Ledger** — public, append-only, never leaderboarded hours.
 4. **You** — your hours, patches, scrapbook in progress.
 
 ## Mechanics in this prototype
-Live pulse · SOS countdown · drift button · crew-spark "ME TOO" toggle · partner marker selection · call-sheet broadsheet · postcard wall · margin notes · cohort hours ledger · patch wall · scrapbook preview · ticker.
+Live pulse · SOS countdown · crew-spark "ME TOO" toggle · partner marker selection · call-sheet broadsheet · postcard wall · margin notes · cohort hours ledger · patch wall · scrapbook preview · ticker.
 
 ## Not yet implemented (stretch)
 Constellation view, time-scrubber, cohort weather (visual), audio postcards, manifesto, anonymous ask box, live floor view, wildcard week, Paged.js scrapbook export, solidarity radio.

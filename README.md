@@ -13,7 +13,6 @@ The prototype commits to an aesthetic — brutalist DIY-zine, riso-print accents
 - Live partner-site pulse and clickable markers
 - SOS bar with live countdown and "claim shift" CTA
 - Monday call-sheet broadsheet (3-column print-ready layout)
-- Drift button (anti-filter-bubble random pick)
 - Crew sparks with "ME TOO" two-tap matching
 - Margin notes and postcard wall (halftone styled)
 - Public, never-leaderboarded hours ledger

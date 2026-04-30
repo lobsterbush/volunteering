@@ -376,26 +376,6 @@ nav.zones .num {
 }
 .partner-card .check-in:hover { background: var(--ink); color: var(--riso); }
 
-/* drift */
-.drift {
-  border: 2px dashed var(--ink);
-  padding: 14px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px;
-  align-items: center;
-  background: repeating-linear-gradient(45deg, var(--paper) 0 8px, rgba(20,20,20,0.04) 8px 9px);
-}
-.drift h4 { font-family: 'Big Shoulders Stencil Display', sans-serif; font-size: 26px; line-height: 1; }
-.drift p { font-family: 'Special Elite', monospace; font-size: 11px; text-transform: uppercase; margin-top: 4px; }
-.drift button {
-  background: var(--ink); color: var(--paper); border: 0;
-  padding: 12px 14px;
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 22px; letter-spacing: 0.06em; cursor: pointer;
-}
-.drift button:hover { background: var(--riso); color: var(--ink); }
-
 /* crew sparks */
 .spark-feed { border: 1.5px solid var(--ink); padding: 10px 12px; background: var(--paper); }
 .spark-feed h4 {
@@ -731,9 +711,6 @@ footer.tabs button .num {
         <svg class="map-annotations" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <text x="32" y="48" font-family="Special Elite, monospace" font-size="13" fill="#1a1a1a" letter-spacing="0.1em">MELBOURNE COHORT</text>
           <text x="32" y="64" font-family="Special Elite, monospace" font-size="10" fill="#6B6962">— SEM 1 / 2026 —</text>
-          <path d="M 220 110 Q 200 140, 158 158" stroke="#FF4438" stroke-width="2.5" fill="none"/>
-          <path d="M 158 158 l 12 -2 l -3 9 z" fill="#FF4438"/>
-          <text x="226" y="104" font-family="Special Elite, monospace" font-size="12" fill="#FF4438">"start here"</text>
           <text x="640" y="556" font-family="Special Elite, monospace" font-size="11" fill="#6B6962" letter-spacing="0.05em">FIVE PARTNERS · ONE SEMESTER</text>
         </svg>
         <div class="legend">
@@ -759,14 +736,6 @@ footer.tabs button .num {
           </div>
           <button class="check-in">CHECK IN →</button>
         </article>
-
-        <div class="drift">
-          <div>
-            <h4>DRIFT</h4>
-            <p>SHOW ME SOMEWHERE UNFAMILIAR</p>
-          </div>
-          <button id="driftBtn">⟳ ROLL</button>
-        </div>
 
         <div class="spark-feed" aria-label="Crew sparks">
           <h4>CREW SPARKS</h4>
@@ -823,7 +792,7 @@ footer.tabs button .num {
         <p>SisterWorks open house. Bring a friend. No volunteer hours logged — this one's for connection.<br><span class="sig">— A.</span></p>
 
         <h3>EYES OPEN</h3>
-        <p>WK.06 wildcard week incoming — drift button only. Plan your unfamiliar accordingly.</p>
+        <p>WK.06 wildcard week incoming — only partners you've never visited surface that week. Plan your unfamiliar accordingly.</p>
       </div>
       <span class="stamp">EDITED BY THE COHORT</span>
     </article>
@@ -950,7 +919,7 @@ footer.tabs button .num {
             <li><b>LOTE PLACEMENT</b> — earned for any shift conducted in a language other than English.</li>
             <li><b>NIGHT SHIFT</b> — earned for any check-in that starts after 18:00.</li>
             <li><b>SOS CLAIM</b> — earned when you claim and complete a partner SOS before its deadline.</li>
-            <li><b>DRIFTER</b> — earned for three shifts at partners you'd never visited before, found via the drift button.</li>
+            <li><b>DRIFTER</b> — earned for three shifts at partners you'd never visited before.</li>
           </ol>
           <p>★ Patches are tactile reminders, not currencies. They do not unlock features, are not visible to partner organisations, and never appear on a leaderboard. They live only in your scrapbook.</p>
         </div>
@@ -989,7 +958,7 @@ footer.tabs button .num {
       <span>// LIVE</span>
       <span class="red">3 VOLS ON THE FLOOR @ ST KILDA MUMS</span>
       <span>// SOS — 14 HRS NEEDED BY FRI 17:00</span>
-      <span class="red">// DRIFT BUTTON FAVOURED THIS WEEK: SISTERWORKS TEXTILES</span>
+      <span class="red">// 47 OPEN SHIFTS · 5 PARTNERS NEED VOLUNTEERS</span>
       <span>// COHORT WEATHER: OVERCAST W/ FOOD-DRIVE FATIGUE</span>
       <span class="red">// NEW MARGIN NOTE @ DIXON HOUSE</span>
       <span>// WK.06 WILDCARD WEEK INCOMING</span>
@@ -997,7 +966,7 @@ footer.tabs button .num {
       <span>// LIVE</span>
       <span class="red">3 VOLS ON THE FLOOR @ ST KILDA MUMS</span>
       <span>// SOS — 14 HRS NEEDED BY FRI 17:00</span>
-      <span class="red">// DRIFT BUTTON FAVOURED THIS WEEK: SISTERWORKS TEXTILES</span>
+      <span class="red">// 47 OPEN SHIFTS · 5 PARTNERS NEED VOLUNTEERS</span>
       <span>// COHORT WEATHER: OVERCAST W/ FOOD-DRIVE FATIGUE</span>
       <span class="red">// NEW MARGIN NOTE @ DIXON HOUSE</span>
       <span>// WK.06 WILDCARD WEEK INCOMING</span>
@@ -1106,16 +1075,6 @@ if (typeof maplibregl !== 'undefined') {
     });
   });
 }
-
-// ===== drift button =====
-document.getElementById('driftBtn')?.addEventListener('click', () => {
-  const current = +document.querySelector('.marker.active')?.dataset.org;
-  const candidates = partners.map((_, i) => i).filter(i => i !== current);
-  const next = candidates[Math.floor(Math.random() * candidates.length)];
-  setActive(next);
-  partnerCard.style.animation = 'shake-tiny 0.25s 2';
-  setTimeout(() => partnerCard.style.animation = '', 600);
-});
 
 // ===== ME TOO toggle =====
 document.querySelectorAll('.me-too').forEach(b => {
