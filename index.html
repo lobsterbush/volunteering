@@ -62,10 +62,10 @@ body::before {
   z-index: 1000;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   mix-blend-mode: multiply;
-  opacity: 0.6;
+  opacity: 0.12;
 }
 
-/* paper grain + corner shadow */
+/* subtle corner accent */
 body::after {
   content: '';
   position: fixed;
@@ -73,9 +73,8 @@ body::after {
   pointer-events: none;
   z-index: 999;
   background:
-    repeating-linear-gradient(0deg, transparent 0 39px, rgba(20,20,20,0.025) 40px),
-    radial-gradient(ellipse at 8% 92%, rgba(20,20,20,0.10), transparent 55%),
-    radial-gradient(ellipse at 95% 5%, rgba(255,68,56,0.05), transparent 55%);
+    radial-gradient(ellipse at 0% 100%, rgba(20,20,20,0.05), transparent 55%),
+    radial-gradient(ellipse at 100% 0%, rgba(255,68,56,0.02), transparent 50%);
 }
 
 main {
@@ -106,7 +105,6 @@ main {
 .masthead h1 .slash {
   color: var(--riso);
   display: inline-block;
-  transform: translateY(-6px) rotate(-3deg);
   margin: 0 -2px;
 }
 .masthead .meta, .masthead .weather {
@@ -139,8 +137,7 @@ main {
   gap: 16px;
   align-items: center;
   position: relative;
-  transform: rotate(-0.3deg);
-  border-left: 8px solid var(--riso);
+  border-left: 6px solid var(--riso);
   flex-wrap: wrap;
 }
 .sos .siren {
@@ -150,7 +147,6 @@ main {
   font-size: 22px;
   padding: 2px 10px;
   letter-spacing: 0.04em;
-  animation: shake-tiny 0.45s infinite;
 }
 .sos .body {
   flex: 1 1 280px;
@@ -162,7 +158,6 @@ main {
   font-family: 'Big Shoulders Stencil Display', sans-serif;
   font-size: 28px;
   letter-spacing: 0.05em;
-  animation: glitch 6s infinite;
 }
 .sos .claim {
   background: var(--paper);
@@ -251,10 +246,9 @@ nav.zones .num {
 }
 .map-annotations { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; display: block; }
 .maplibre-map { position: absolute; inset: 0; z-index: 1; }
-.maplibre-map .maplibregl-canvas { filter: contrast(1.18) grayscale(1) brightness(1.05) saturate(0); }
+.maplibre-map .maplibregl-canvas { filter: contrast(1.04) grayscale(0.85) brightness(1.02); }
 .maplibre-map .maplibregl-control-container { display: none !important; }
-.map .paper-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 2; background: var(--paper); mix-blend-mode: multiply; opacity: 0.5; }
-.map .paper-overlay::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 70%, rgba(255,68,56,0.10), transparent 65%); mix-blend-mode: screen; }
+.map .paper-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 2; background: var(--paper); mix-blend-mode: multiply; opacity: 0.18; }
 .maplibregl-marker { cursor: pointer; }
 
 .marker {
@@ -397,15 +391,14 @@ nav.zones .num {
 
 /* margin notes */
 .margin-note {
-  background:
-    repeating-linear-gradient(0deg, transparent 0 22px, rgba(20,20,20,0.06) 22px 23px),
-    #FFF6C7;
-  padding: 10px 12px;
+  background: var(--paper);
+  border: 1px solid var(--ink);
   border-left: 3px solid var(--riso);
-  font-family: 'Special Elite', monospace;
+  padding: 12px 14px;
+  font-family: 'DM Mono', monospace;
   font-size: 12px;
   position: relative;
-  transform: rotate(-0.4deg);
+  line-height: 1.5;
 }
 .margin-note::before {
   content: 'MARGIN NOTE //';
@@ -432,20 +425,6 @@ nav.zones .num {
   line-height: 1.45;
   box-shadow: 3px 3px 0 var(--ink);
 }
-.bulletin-item::before {
-  content: '';
-  position: absolute;
-  top: -10px; left: 50%;
-  transform: translateX(-50%) rotate(-2deg);
-  width: 64px; height: 18px;
-  background: rgba(255,233,168,0.85);
-  border-left: 1px dashed rgba(20,20,20,0.45);
-  border-right: 1px dashed rgba(20,20,20,0.45);
-  z-index: 1;
-}
-.bulletin-item:nth-child(3n) { transform: rotate(-0.4deg); }
-.bulletin-item:nth-child(3n+1) { transform: rotate(0.5deg); }
-.bulletin-item:nth-child(3n+2) { transform: rotate(-0.2deg); }
 .bulletin-item .tag {
   display: inline-block;
   font-family: 'Big Shoulders Stencil Display', sans-serif;
@@ -496,14 +475,6 @@ nav.zones .num {
 .callsheet .columns h3 { font-family: 'Big Shoulders Stencil Display', sans-serif; font-size: 18px; margin-bottom: 4px; break-after: avoid; }
 .callsheet .columns p { margin-bottom: 12px; break-inside: avoid; }
 .callsheet .columns .sig { font-family: 'Special Elite', monospace; font-size: 10px; text-transform: uppercase; color: var(--muted); }
-.callsheet .stamp {
-  position: absolute;
-  bottom: -14px; right: 24px;
-  background: var(--riso); color: var(--ink);
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 18px; padding: 4px 10px; letter-spacing: 0.04em;
-  transform: rotate(-3deg); border: 2px solid var(--ink);
-}
 
 /* ====== WALL ====== */
 .wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 22px; }
@@ -514,23 +485,15 @@ nav.zones .num {
   position: relative;
   box-shadow: 5px 5px 0 var(--ink);
 }
-.postcard:nth-child(3n) { transform: rotate(-1deg); }
-.postcard:nth-child(3n+1) { transform: rotate(0.7deg); }
-.postcard:nth-child(3n+2) { transform: rotate(-0.4deg); }
 .postcard .stamp {
-  position: absolute; top: -10px; right: 10px;
-  background: var(--riso); color: var(--ink);
+  position: absolute; top: 12px; right: 12px;
+  background: var(--paper); color: var(--ink);
   font-family: 'Big Shoulders Stencil Display', sans-serif;
   font-size: 11px; padding: 2px 6px; letter-spacing: 0.05em;
-  border: 1.5px solid var(--ink);
+  border: 1px solid var(--ink);
 }
-.postcard .img { height: 140px; background: var(--ink); position: relative; margin-bottom: 8px; overflow: hidden; }
-.postcard .img.h1 { background: radial-gradient(circle at center, var(--riso) 30%, transparent 32%) 0 0/8px 8px, var(--ink); }
-.postcard .img.h2 { background: radial-gradient(circle at center, var(--paper) 22%, transparent 24%) 0 0/6px 6px, var(--ink); }
-.postcard .img.h3 { background: repeating-linear-gradient(45deg, var(--ink) 0 3px, var(--paper) 3px 6px); }
-.postcard .img.h4 { background: radial-gradient(circle at 30% 40%, var(--paper) 22%, transparent 24%) 0 0/10px 10px, var(--riso); }
-.postcard .img.h5 { background: radial-gradient(circle at 70% 60%, var(--ink) 25%, transparent 26%) 0 0/12px 12px, var(--paper); }
-.postcard .img.h6 { background: linear-gradient(180deg, var(--riso) 0 30%, var(--ink) 30% 65%, var(--paper) 65%); }
+.postcard .accent { height: 4px; background: var(--ink); margin-bottom: 14px; }
+.postcard .accent.r { background: var(--riso); }
 .postcard .meta { font-family: 'Special Elite', monospace; font-size: 10px; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.03em; }
 .postcard p { font-size: 12px; line-height: 1.45; }
 .postcard .who { margin-top: 8px; font-family: 'Special Elite', monospace; font-size: 10px; text-transform: uppercase; border-top: 1px dashed var(--ink); padding-top: 4px; }
@@ -709,11 +672,6 @@ footer.tabs button .num {
   font-size: 9px; letter-spacing: 0; opacity: 0.7;
 }
 
-/* caret */
-.caret::after {
-  content: '_'; display: inline-block; margin-left: 2px;
-  animation: blink 1s steps(1) infinite; color: var(--riso);
-}
 </style>
 </head>
 <body>
@@ -722,16 +680,14 @@ footer.tabs button .num {
   <header class="masthead">
     <h1>VOLUNTEER<span class="slash">//</span>HUB</h1>
     <div class="meta">
-      <div><strong>EDITION 07</strong></div>
-      <div>WK 07 / SEMESTER 1 / 2026</div>
-      <div>MON 06:00 — SUN 18:00</div>
-      <div>MON2000 // FLAGSHIP RICH EXPERIENCES</div>
-      <div>RUN BY THE COHORT, NOT FOR IT</div>
+      <div><strong>WEEK 07 / 12</strong></div>
+      <div>SEMESTER 1, 2026</div>
+      <div>MON2000 — VOLUNTEERING IN PRACTICE</div>
+      <div>MONASH UNIVERSITY</div>
     </div>
     <div class="weather">
-      <span class="big">☁︎</span>
-      cohort weather:
-      <br>OVERCAST W/<br>FOOD-DRIVE FATIGUE
+      <span class="big">47</span>
+      OPEN SHIFTS THIS WEEK<br>5 PARTNER ORGANISATIONS
     </div>
   </header>
 
@@ -739,7 +695,7 @@ footer.tabs button .num {
   <div class="sos" role="alert" aria-live="polite">
     <span class="siren">SOS</span>
     <div class="body">
-      <b>ST KILDA MUMS</b> — 14 hrs of sorting needed before <b>FRI 17:00</b>. Cot-rehoming backlog. Tea provided.
+      <b>ST KILDA MUMS</b> — 14 hours of sorting required before <b>Friday 17:00</b> to clear the cot rehoming queue.
     </div>
     <div class="countdown" id="countdown">02:18:42</div>
     <button class="claim">CLAIM SHIFT →</button>
@@ -792,23 +748,23 @@ footer.tabs button .num {
           <h4>CREW SPARKS</h4>
           <div class="spark">
             <span class="who">@vol_037</span>
-            <span class="what">heading to FoodFilled SAT 09:30 — anyone? bringing a thermos.</span>
-            <button class="me-too">ME TOO</button>
+            <span class="what">FoodFilled, Saturday 09:30 — looking for one or two people to join.</span>
+            <button class="me-too">JOIN</button>
           </div>
           <div class="spark">
             <span class="who">@vol_112</span>
-            <span class="what">SisterWorks textiles WED arvo. 2 spots. lift from Clayton avail.</span>
-            <button class="me-too">ME TOO</button>
+            <span class="what">SisterWorks textiles, Wednesday afternoon. Two spots; lift from Clayton available.</span>
+            <button class="me-too">JOIN</button>
           </div>
           <div class="spark">
             <span class="who">@vol_004</span>
-            <span class="what">night sort @ St Kilda Mums THU 19:00. dress warm.</span>
-            <button class="me-too">ME TOO</button>
+            <span class="what">St Kilda Mums night sort, Thursday 19:00. Warm clothing recommended.</span>
+            <button class="me-too">JOIN</button>
           </div>
         </div>
 
         <div class="margin-note">
-          ★ Tip from a previous cohort: ask for Anwar at SisterWorks — he runs the Wednesday textiles bench. The kettle is in the back left. Trams stop ~9:30pm; don't miss the 96.
+          Tip from a previous cohort: SisterWorks Wednesday textile sessions are run by Anwar. The last tram (Route 96) departs around 21:30.
         </div>
       </aside>
     </div>
@@ -816,129 +772,125 @@ footer.tabs button .num {
     <!-- CALL SHEET -->
     <article class="callsheet">
       <header>
-        <div class="kicker">PRINTED MONDAY 06:00 — TEAR ALONG DOTTED LINE</div>
+        <div class="kicker">PUBLISHED MONDAY 06:00 — WEEKLY SHIFT BULLETIN</div>
         <h2>THE <span class="red">CALL</span> SHEET</h2>
-        <div class="strap">// 47 OPEN SHIFTS · 5 PARTNERS · WK.07 OF 12 //</div>
+        <div class="strap">47 OPEN SHIFTS · 5 PARTNER ORGANISATIONS · WEEK 07 OF 12</div>
       </header>
       <div class="columns">
         <h3>MON 04 / FOOD</h3>
-        <p>FoodFilled needs 6 volunteers 14:00–17:00 for the Brunswick rescue run. Closed shoes. Lifting required.<br><span class="sig">— K. (vol coord.)</span></p>
+        <p>FoodFilled requires six volunteers 14:00–17:00 for a food-rescue run in Brunswick. Closed-toe shoes; some lifting required.<br><span class="sig">— K., volunteer coordinator</span></p>
 
         <h3>TUE 05 / TEXTILES</h3>
-        <p>SisterWorks Footscray. Cutting + packaging for an Eid order. 10:00–13:00. Kettle is on. New volunteers welcome.<br><span class="sig">— A.</span></p>
+        <p>SisterWorks Footscray. Sorting and packaging garments for a community order, 10:00–13:00. New volunteers welcome.<br><span class="sig">— A.</span></p>
 
-        <h3>WED 06 / NIGHT SORT</h3>
-        <p>St Kilda Mums after-hours. 19:00–21:30. Cots, prams, baby clothes. Tea + warm socks if you've got 'em.<br><span class="sig">— J.</span></p>
+        <h3>WED 06 / SORTING</h3>
+        <p>St Kilda Mums, after-hours sorting, 19:00–21:30. Cots, prams, and baby clothing. Warm clothing recommended.<br><span class="sig">— J.</span></p>
 
         <h3>THU 07 / KITCHEN</h3>
-        <p>MSA Wholefoods, Clayton. 11:30–14:30 prep + service. Free meal at end of shift. Hairnets supplied.<br><span class="sig">— L.</span></p>
+        <p>MSA Wholefoods, Clayton campus. Kitchen prep and service, 11:30–14:30. Meal provided at end of shift; hairnets supplied.<br><span class="sig">— L.</span></p>
 
         <h3>FRI 08 / OUTREACH</h3>
-        <p>Dixon House neighbourhood drop-in. Conversation, tea, bingo. 13:00–16:00. Mandarin speakers especially welcome.<br><span class="sig">— P.</span></p>
+        <p>Dixon House neighbourhood drop-in, 13:00–16:00. Conversation, tea, and group activities. Mandarin speakers especially welcome.<br><span class="sig">— P.</span></p>
 
         <h3>SAT 09 / RESCUE</h3>
-        <p>FoodFilled produce sort, Footscray markets. 06:30–09:30. Early start. The coffee cart on the corner is recommended.<br><span class="sig">— K.</span></p>
+        <p>FoodFilled produce sort at Footscray markets, 06:30–09:30. Early start; closed-toe shoes.<br><span class="sig">— K.</span></p>
 
         <h3>SUN 10 / OPEN HOUSE</h3>
-        <p>SisterWorks open house. Bring a friend. No volunteer hours logged — this one's for connection.<br><span class="sig">— A.</span></p>
-
-        <h3>EYES OPEN</h3>
-        <p>WK.06 wildcard week incoming — only partners you've never visited surface that week. Plan your unfamiliar accordingly.</p>
+        <p>SisterWorks community open house. Open to the cohort and guests. Volunteer hours are not logged for this event.<br><span class="sig">— A.</span></p>
       </div>
-      <span class="stamp">EDITED BY THE COHORT</span>
     </article>
   </section>
 
   <!-- ====== THE WALL ====== -->
   <section class="zone" data-zone="wall">
-    <div class="kicker">// 36 POSTCARDS · 14 BULLETIN POSTS · 12 MARGIN NOTES · 2 SOS · WK.07</div>
+    <div class="kicker">// THE COHORT WALL · WEEK 07</div>
     <div class="wall">
       <div class="postcard">
-        <div class="stamp">WK.07</div>
-        <div class="img h1"></div>
+        <div class="accent r"></div>
+        <div class="stamp">WK 07</div>
         <div class="meta">ST KILDA MUMS · 4 HRS</div>
-        <p>Sorted 31 cot kits. The smallest jumper had a hand-stitched cat on it. Someone made that. Someone else will wear it.</p>
+        <p>Sorted 31 cot kits and updated the inventory. Items are now ready for distribution to families on the waiting list.</p>
         <div class="who">— @vol_037</div>
       </div>
       <div class="postcard">
-        <div class="stamp">WK.07</div>
-        <div class="img h2"></div>
+        <div class="accent"></div>
+        <div class="stamp">WK 07</div>
         <div class="meta">SISTERWORKS · 3 HRS</div>
-        <p>Anwar walked me through the cutting bench. He pointed at the kettle three times before I understood. Tea, then talk. That's the order.</p>
+        <p>Trained on the textile bench by Anwar and completed sorting for the Wednesday community order.</p>
         <div class="who">— @vol_004</div>
       </div>
       <div class="postcard">
-        <div class="stamp">WK.07</div>
-        <div class="img h3"></div>
+        <div class="accent"></div>
+        <div class="stamp">WK 07</div>
         <div class="meta">FOODFILLED · 3 HRS</div>
-        <p>Brunswick rescue run. We saved 41kg of bananas from a skip. They will become 200 lunchboxes. The maths of food is mostly maths.</p>
+        <p>Brunswick food-rescue run. Recovered 41 kg of produce, redirected to the partner lunchbox programme.</p>
         <div class="who">— @vol_112</div>
       </div>
       <div class="postcard">
-        <div class="stamp">WK.07</div>
-        <div class="img h4"></div>
+        <div class="accent r"></div>
+        <div class="stamp">WK 07</div>
         <div class="meta">DIXON HOUSE · 3 HRS</div>
-        <p>Played bingo in three languages. Won nothing. Lost time well.</p>
+        <p>Group activity session at the neighbourhood drop-in. Multilingual conversation circle and afternoon tea.</p>
         <div class="who">— @vol_222</div>
       </div>
       <div class="postcard">
-        <div class="stamp">WK.06</div>
-        <div class="img h5"></div>
+        <div class="accent"></div>
+        <div class="stamp">WK 06</div>
         <div class="meta">MSA WHOLEFOODS · 3 HRS</div>
-        <p>Hairnet hour 1. Service hour 2. Talked to a PhD student about Foucault while peeling carrots. Hairnet hour 3.</p>
+        <p>Kitchen prep and service shift, including clean-down. A short, well-organised rotation.</p>
         <div class="who">— @vol_059</div>
       </div>
       <div class="postcard">
-        <div class="stamp">WK.06</div>
-        <div class="img h6"></div>
+        <div class="accent r"></div>
+        <div class="stamp">WK 06</div>
         <div class="meta">ST KILDA MUMS · 4 HRS</div>
-        <p>The pram had a sticker that said "Frankie, age 1, now ready for someone else." I cried in the carpark a little.</p>
+        <p>Pram and stroller quality check and sorting. Twelve units processed and prepared for re-homing.</p>
         <div class="who">— @vol_148</div>
       </div>
     </div>
 
     <h3 class="wall-section-h">// THE BULLETIN</h3>
-    <p style="font-family:'Special Elite',monospace; font-size:11px; text-transform:uppercase; color: var(--muted); margin-bottom: 12px;">// COHORT-TO-COHORT NOTICES — NOT FOR PARTNERS, NOT FOR THE UNIT TEAM. CLEARED EVERY MONDAY.</p>
+    <p style="font-family:'Special Elite',monospace; font-size:11px; text-transform:uppercase; color: var(--muted); margin-bottom: 12px;">Cohort-to-cohort notices. Refreshed weekly.</p>
     <div class="bulletin">
       <div class="bulletin-item">
         <span class="tag red">LOST &amp; FOUND</span>
-        <p>Black water bottle, dented, &ldquo;smash the patriarchy&rdquo; sticker. Left at SisterWorks Wednesday. Anwar has it behind the kettle.</p>
-        <div class="who">@vol_201 · WK.07</div>
+        <p>Black water bottle left at SisterWorks on Wednesday. Held at the front desk.</p>
+        <div class="who">@vol_201 · WK 07</div>
       </div>
       <div class="bulletin-item">
         <span class="tag">CARPOOL</span>
-        <p>Driving Clayton → Footscray markets SAT 06:00 for the produce sort. Three seats. Drop on the way back if you&rsquo;re in the west.</p>
-        <div class="who">@vol_088 · WK.07</div>
+        <p>Driving Clayton to Footscray markets, Saturday 06:00, for the produce sort. Three seats; drop on the return if convenient.</p>
+        <div class="who">@vol_088 · WK 07</div>
       </div>
       <div class="bulletin-item">
         <span class="tag">SHIFT SWAP</span>
-        <p>I have a TUE 14:00 FoodFilled shift I can&rsquo;t make. Will swap for a SisterWorks WED textiles slot.</p>
-        <div class="who">@vol_037 · WK.07</div>
+        <p>Looking to swap a Tuesday 14:00 FoodFilled shift for a Wednesday SisterWorks textiles slot.</p>
+        <div class="who">@vol_037 · WK 07</div>
       </div>
       <div class="bulletin-item">
         <span class="tag">FREE</span>
-        <p>Pile of decent kid-sized rain jackets out of my own cupboard. Not for partners — for the cohort. First in. Bring a tote.</p>
-        <div class="who">@vol_148 · WK.06</div>
+        <p>Children's rain jackets available — surplus from a personal donation drive. For cohort use.</p>
+        <div class="who">@vol_148 · WK 06</div>
       </div>
       <div class="bulletin-item">
         <span class="tag">ASK</span>
-        <p>Has anyone done a Mandarin shift at Dixon House? Tips for the bingo numbers? My counting in M is shaky.</p>
-        <div class="who">@vol_222 · WK.07</div>
+        <p>Anyone done a Mandarin-language shift at Dixon House? Looking for a few tips before mine on Friday.</p>
+        <div class="who">@vol_222 · WK 07</div>
       </div>
       <div class="bulletin-item">
         <span class="tag red">FOUND</span>
-        <p>Set of keys, small horse keychain, on the bench outside St Kilda Mums MON arvo. With reception now.</p>
-        <div class="who">@vol_059 · WK.06</div>
+        <p>Set of keys (small charm attached) found outside St Kilda Mums on Monday afternoon. At reception.</p>
+        <div class="who">@vol_059 · WK 06</div>
       </div>
     </div>
 
     <h3 class="wall-section-h">// MARGIN NOTES</h3>
     <div style="display:grid; gap:14px; grid-template-columns: repeat(auto-fill,minmax(260px,1fr));">
-      <div class="margin-note">SISTERWORKS // ask for Anwar Wednesdays. Kettle in the back left. Trams stop ~9:30pm — don't miss the 96.</div>
-      <div class="margin-note">ST KILDA MUMS // wheelchair access via the side roller door. Front step is 14cm. Email coordinator first time.</div>
-      <div class="margin-note">FOODFILLED // wear closed shoes you don't love. The Brunswick run gets fruit-juice-y. Bring a water bottle.</div>
-      <div class="margin-note">MSA WHOLEFOODS // free meal after 3hr shift. Vegan default. Tell them about allergies BEFORE service starts.</div>
-      <div class="margin-note">DIXON HOUSE // bingo cards live in the second drawer. Mandarin numbers cheat-sheet behind the kettle.</div>
+      <div class="margin-note">SISTERWORKS // Wednesday textile sessions are coordinated by Anwar. The last tram (Route 96) departs around 21:30.</div>
+      <div class="margin-note">ST KILDA MUMS // Wheelchair access via the side roller door. Front step at the main entrance is 14 cm. Contact the coordinator before your first visit.</div>
+      <div class="margin-note">FOODFILLED // Closed-toe shoes required. Bring a water bottle for the Brunswick rescue run.</div>
+      <div class="margin-note">MSA WHOLEFOODS // A meal is provided after a three-hour shift. Vegan by default — flag allergies before service begins.</div>
+      <div class="margin-note">DIXON HOUSE // A Mandarin numerals reference card is kept behind the main desk for new volunteers.</div>
     </div>
   </section>
 
@@ -968,7 +920,7 @@ footer.tabs button .num {
       <div class="total">COHORT TOTAL THIS SEM: <b>546 HRS</b> / TARGET 720 / WK.07 OF 12</div>
       <div class="progress" aria-label="75.8% of cohort target reached"></div>
       <p style="font-family:'Special Elite',monospace; font-size:11px; text-transform:uppercase; margin-top:10px; color: var(--muted);">
-        ★ Hours are credited to organisations, not individuals. Per-student totals are visible only to the unit team and to you. There is no leaderboard. There never will be.
+        Hours are credited to organisations rather than individuals. Per-student totals are visible only to the student and the unit team. No leaderboards.
       </p>
     </div>
   </section>
@@ -988,7 +940,7 @@ footer.tabs button .num {
 
       <div class="you-block">
         <h3>PATCHES</h3>
-        <p style="font-family:'Special Elite',monospace; font-size:10px; text-transform:uppercase; color: var(--muted); margin-bottom: 4px;">// IRON-ON, NOT BADGES. NOT LEADERBOARDED.</p>
+        <p style="font-family:'Special Elite',monospace; font-size:10px; text-transform:uppercase; color: var(--muted); margin-bottom: 4px;">Personal achievements. Not visible to partners or on any leaderboard.</p>
         <div class="patches">
           <div class="patch earned">FIRST<br>SHIFT</div>
           <div class="patch earned">BIKE<br>COMMUTE</div>
@@ -1007,7 +959,7 @@ footer.tabs button .num {
             <li><b>SOS CLAIM</b> — earned when you claim and complete a partner SOS before its deadline.</li>
             <li><b>DRIFTER</b> — earned for three shifts at partners you'd never visited before.</li>
           </ol>
-          <p>★ Patches are tactile reminders, not currencies. They do not unlock features, are not visible to partner organisations, and never appear on a leaderboard. They live only in your scrapbook.</p>
+          <p>Patches are personal achievements only. They do not unlock features, are not visible to partner organisations, and never appear on a leaderboard.</p>
         </div>
       </div>
 
@@ -1032,36 +984,15 @@ footer.tabs button .num {
             <li><b>PRINT-READY</b> at the end of the semester (Wk 12) as an A5 stapled booklet PDF, generated server-side via Paged.js.</li>
             <li><b>PRIVATE</b> — only you and the unit team see your scrapbook. A separate cohort scrapbook is exported with consenting postcards only.</li>
           </ol>
-          <p>★ The scrapbook is the unit's reflective-assessment artefact. Nothing else is required for the reflection component of MON2000.</p>
+          <p>The scrapbook serves as the unit's reflective-assessment artefact for MON2000.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ====== TICKER ====== -->
-  <div class="ticker" aria-hidden="true">
-    <div class="track">
-      <span>// LIVE</span>
-      <span class="red">3 VOLS ON THE FLOOR @ ST KILDA MUMS</span>
-      <span>// SOS — 14 HRS NEEDED BY FRI 17:00</span>
-      <span class="red">// 47 OPEN SHIFTS · 5 PARTNERS NEED VOLUNTEERS</span>
-      <span>// COHORT WEATHER: OVERCAST W/ FOOD-DRIVE FATIGUE</span>
-      <span class="red">// NEW MARGIN NOTE @ DIXON HOUSE</span>
-      <span>// WK.06 WILDCARD WEEK INCOMING</span>
-      <!-- duplicate for seamless loop -->
-      <span>// LIVE</span>
-      <span class="red">3 VOLS ON THE FLOOR @ ST KILDA MUMS</span>
-      <span>// SOS — 14 HRS NEEDED BY FRI 17:00</span>
-      <span class="red">// 47 OPEN SHIFTS · 5 PARTNERS NEED VOLUNTEERS</span>
-      <span>// COHORT WEATHER: OVERCAST W/ FOOD-DRIVE FATIGUE</span>
-      <span class="red">// NEW MARGIN NOTE @ DIXON HOUSE</span>
-      <span>// WK.06 WILDCARD WEEK INCOMING</span>
-    </div>
-  </div>
-
-  <!-- COLOPHON -->
-  <p style="font-family:'Special Elite',monospace; font-size:10px; text-transform:uppercase; color: var(--muted); margin-top: 24px; text-align:center;">
-    COLOPHON // SET IN BIG SHOULDERS STENCIL DISPLAY, SPECIAL ELITE &amp; DM MONO. PHOTOCOPIED ON RECYCLED PIXELS. NO TRACKERS, NO LEADERBOARDS, NO PURPLE GRADIENTS. <span class="caret"></span>
+  <!-- FOOTER -->
+  <p style="font-family:'Special Elite',monospace; font-size:10px; text-transform:uppercase; color: var(--muted); margin-top: 36px; text-align:center; letter-spacing: 0.06em;">
+    MON2000 Volunteer Hub · Prototype · Monash University, 2026
   </p>
 </main>
 
@@ -1162,15 +1093,17 @@ if (typeof maplibregl !== 'undefined') {
   });
 }
 
-// ===== ME TOO toggle =====
+// ===== JOIN toggle =====
 document.querySelectorAll('.me-too').forEach(b => {
   b.addEventListener('click', () => {
-    if (b.textContent === 'ME TOO') {
+    if (b.textContent === 'JOIN') {
       b.textContent = 'IN ✓';
       b.style.background = 'var(--riso)';
+      b.style.color = 'var(--ink)';
     } else {
-      b.textContent = 'ME TOO';
+      b.textContent = 'JOIN';
       b.style.background = 'var(--paper)';
+      b.style.color = 'var(--ink)';
     }
   });
 });

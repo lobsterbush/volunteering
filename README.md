@@ -1,5 +1,5 @@
 # MON2000 Volunteer Hub
-A brutalist DIY-zine prototype for a multi-turn, interactive bulletin-board replacement supporting Monash University's MON2000 *Volunteering in Practice* unit.
+An editorial-style web prototype for a multi-turn, interactive bulletin-board replacement supporting Monash University's MON2000 *Volunteering in Practice* unit.
 
 ## Authors
 Charles Crabtree, Senior Lecturer, School of Social Sciences, Monash University and K-Club Professor, University College, Korea University.
@@ -7,7 +7,7 @@ Charles Crabtree, Senior Lecturer, School of Social Sciences, Monash University 
 ## Overview
 MON2000 students complete 24 hours of volunteering placement with partner organisations (St Kilda Mums, SisterWorks, FoodFilled, MSA Wholefoods, Dixon House, etc.) alongside online modules and reflective assessments. The Volunteer Hub is a cohort-visible, real-time alternative to the static bulletin board: a map, a wall of postcards, a transparent hours ledger, and a personal scrapbook view, structured around a weekly turn cycle (Mon 06:00 call sheet → Sun 18:00 edition close).
 
-The prototype commits to an aesthetic — brutalist DIY-zine, riso-print accents — that signals the work is *made by humans, for humans, in a place*, and deliberately rejects the SaaS-onboarding aesthetic students associate with bureaucratic compliance.
+The visual treatment is editorial and restrained: paper-tone background, a single fluoro accent (riso red `#FF4438`), distinctive display typography (Big Shoulders Stencil Display), and minimal motion.
 
 ## Mechanics demonstrated
 - Live partner-site pulse and clickable markers

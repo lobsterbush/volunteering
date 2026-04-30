@@ -1,6 +1,6 @@
 # MON2000 Volunteer Hub
 **Status:** Draft / prototype
-**Description:** Brutalist DIY-zine prototype for an interactive bulletin-board replacement supporting Monash MON2000 *Volunteering in Practice*.
+**Description:** Editorial-style web prototype for an interactive bulletin-board replacement supporting Monash MON2000 *Volunteering in Practice*.
 **Authors:** Charles Crabtree, Senior Lecturer, School of Social Sciences, Monash University and K-Club Professor, University College, Korea University.
 
 ## Files
@@ -11,7 +11,7 @@
 MapLibre GL JS with the free CARTO Positron basemap, riso-filtered (grayscale + paper-color multiply + warm radial wash). To swap for Mapbox GL JS, see the comment above `partnerCoords` in `index.html`.
 
 ## Aesthetic
-Brutalist DIY-zine, riso-print accents. Paper-white / ink-black / one fluoro accent (`#FF4438` riso red). Display: Big Shoulders Stencil Display. Accent: Special Elite. Body: DM Mono. Photocopy noise overlay, halftone postcards, masking-tape headers, snap-cut motion. No purple gradients. No Inter.
+Clean editorial layout with a single fluoro accent. Paper (`#F1ECDF`) / ink (`#141414`) / riso red (`#FF4438`). Display: Big Shoulders Stencil Display. Accent: Special Elite. Body: DM Mono. Subtle paper texture; minimal motion.
 
 ## Zones (4-tab IA)
 1. **The Map** — counter-cartographic Melbourne, pulsing partner pins, live SOS, crew sparks, Monday call-sheet broadsheet.
