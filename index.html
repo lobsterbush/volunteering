@@ -415,6 +415,57 @@ nav.zones .num {
   color: var(--riso); margin-bottom: 4px;
 }
 
+/* ====== BULLETIN BOARD ====== */
+.bulletin {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+.bulletin-item {
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  padding: 14px 14px 10px;
+  position: relative;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.bulletin-item::before {
+  content: '';
+  position: absolute;
+  top: -10px; left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 64px; height: 18px;
+  background: rgba(255,233,168,0.85);
+  border-left: 1px dashed rgba(20,20,20,0.45);
+  border-right: 1px dashed rgba(20,20,20,0.45);
+  z-index: 1;
+}
+.bulletin-item:nth-child(3n) { transform: rotate(-0.4deg); }
+.bulletin-item:nth-child(3n+1) { transform: rotate(0.5deg); }
+.bulletin-item:nth-child(3n+2) { transform: rotate(-0.2deg); }
+.bulletin-item .tag {
+  display: inline-block;
+  font-family: 'Big Shoulders Stencil Display', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  background: var(--ink); color: var(--paper);
+  padding: 1px 6px;
+  margin-bottom: 6px;
+}
+.bulletin-item .tag.red { background: var(--riso); color: var(--ink); }
+.bulletin-item p { margin-bottom: 6px; }
+.bulletin-item .who {
+  font-family: 'Special Elite', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  border-top: 1px dashed var(--ink);
+  padding-top: 4px;
+  color: var(--muted);
+}
+
 /* ====== CALL SHEET ====== */
 .callsheet {
   margin-top: 28px;
@@ -800,7 +851,7 @@ footer.tabs button .num {
 
   <!-- ====== THE WALL ====== -->
   <section class="zone" data-zone="wall">
-    <div class="kicker">// 36 POSTCARDS THIS WEEK · 12 MARGIN NOTES · 2 SOS</div>
+    <div class="kicker">// 36 POSTCARDS · 14 BULLETIN POSTS · 12 MARGIN NOTES · 2 SOS · WK.07</div>
     <div class="wall">
       <div class="postcard">
         <div class="stamp">WK.07</div>
@@ -843,6 +894,41 @@ footer.tabs button .num {
         <div class="meta">ST KILDA MUMS · 4 HRS</div>
         <p>The pram had a sticker that said "Frankie, age 1, now ready for someone else." I cried in the carpark a little.</p>
         <div class="who">— @vol_148</div>
+      </div>
+    </div>
+
+    <h3 class="wall-section-h">// THE BULLETIN</h3>
+    <p style="font-family:'Special Elite',monospace; font-size:11px; text-transform:uppercase; color: var(--muted); margin-bottom: 12px;">// COHORT-TO-COHORT NOTICES — NOT FOR PARTNERS, NOT FOR THE UNIT TEAM. CLEARED EVERY MONDAY.</p>
+    <div class="bulletin">
+      <div class="bulletin-item">
+        <span class="tag red">LOST &amp; FOUND</span>
+        <p>Black water bottle, dented, &ldquo;smash the patriarchy&rdquo; sticker. Left at SisterWorks Wednesday. Anwar has it behind the kettle.</p>
+        <div class="who">@vol_201 · WK.07</div>
+      </div>
+      <div class="bulletin-item">
+        <span class="tag">CARPOOL</span>
+        <p>Driving Clayton → Footscray markets SAT 06:00 for the produce sort. Three seats. Drop on the way back if you&rsquo;re in the west.</p>
+        <div class="who">@vol_088 · WK.07</div>
+      </div>
+      <div class="bulletin-item">
+        <span class="tag">SHIFT SWAP</span>
+        <p>I have a TUE 14:00 FoodFilled shift I can&rsquo;t make. Will swap for a SisterWorks WED textiles slot.</p>
+        <div class="who">@vol_037 · WK.07</div>
+      </div>
+      <div class="bulletin-item">
+        <span class="tag">FREE</span>
+        <p>Pile of decent kid-sized rain jackets out of my own cupboard. Not for partners — for the cohort. First in. Bring a tote.</p>
+        <div class="who">@vol_148 · WK.06</div>
+      </div>
+      <div class="bulletin-item">
+        <span class="tag">ASK</span>
+        <p>Has anyone done a Mandarin shift at Dixon House? Tips for the bingo numbers? My counting in M is shaky.</p>
+        <div class="who">@vol_222 · WK.07</div>
+      </div>
+      <div class="bulletin-item">
+        <span class="tag red">FOUND</span>
+        <p>Set of keys, small horse keychain, on the bench outside St Kilda Mums MON arvo. With reception now.</p>
+        <div class="who">@vol_059 · WK.06</div>
       </div>
     </div>
 
