@@ -26,11 +26,20 @@ function initZones() {
     b.addEventListener('click', () => go(b.dataset.zone)));
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function boot() {
   initZones();
   await initAuth();
   initMap();
   initBulletin();
   initWiki();
   initChatbot();
-});
+  console.log('[App] Booted');
+}
+
+// Modules with top-level await can finish AFTER DOMContentLoaded fires,
+// so check readyState instead of relying on the event.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
