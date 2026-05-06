@@ -4,677 +4,41 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>VOLUNTEER//HUB · ED.07 · WK.07 / 12</title>
+<meta name="description" content="MON2000 Volunteering in Practice — Monash University Volunteer Hub">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@800;900&family=Special+Elite&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-<style>
-:root {
-  --paper: #F1ECDF;
-  --paper-2: #E9E2D0;
-  --ink: #141414;
-  --riso: #FF4438;
-  --muted: #6B6962;
-  --tape: #FFE9A8;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.4); opacity: 0.65; }
-}
-@keyframes pulse-ring {
-  0% { transform: scale(1); opacity: 0.85; }
-  100% { transform: scale(2.8); opacity: 0; }
-}
-@keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
-@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-@keyframes shake-tiny {
-  0%,100%{transform:rotate(0)}
-  25%{transform:rotate(-0.4deg) translateX(-1px)}
-  75%{transform:rotate(0.4deg) translateX(1px)}
-}
-@keyframes glitch {
-  0%,90%,100%{ transform: translate(0); }
-  92%{ transform: translate(-2px, 1px); }
-  94%{ transform: translate(2px, -1px); }
-  96%{ transform: translate(-1px, 0); }
-}
-
-html, body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: 'DM Mono', 'Courier New', monospace;
-  font-size: 14px;
-  line-height: 1.45;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* photocopy noise overlay (multiplies onto everything) */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1000;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  mix-blend-mode: multiply;
-  opacity: 0.12;
-}
-
-/* subtle corner accent */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 999;
-  background:
-    radial-gradient(ellipse at 0% 100%, rgba(20,20,20,0.05), transparent 55%),
-    radial-gradient(ellipse at 100% 0%, rgba(255,68,56,0.02), transparent 50%);
-}
-
-main {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 22px 28px 130px;
-  position: relative;
-}
-
-/* ====== MASTHEAD ====== */
-.masthead {
-  border-top: 4px double var(--ink);
-  border-bottom: 4px double var(--ink);
-  padding: 12px 0 10px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 22px;
-  align-items: end;
-  margin-bottom: 18px;
-}
-.masthead h1 {
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-weight: 900;
-  font-size: clamp(48px, 9vw, 104px);
-  line-height: 0.82;
-  letter-spacing: -0.005em;
-}
-.masthead h1 .slash {
-  color: var(--riso);
-  display: inline-block;
-  margin: 0 -2px;
-}
-.masthead .meta, .masthead .weather {
-  font-family: 'Special Elite', monospace;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  align-self: end;
-  padding-bottom: 4px;
-}
-.masthead .meta div { margin-bottom: 2px; }
-.masthead .meta strong { background: var(--ink); color: var(--paper); padding: 1px 6px; }
-.masthead .weather { text-align: right; }
-.masthead .weather .big {
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 56px;
-  display: block;
-  line-height: 0.9;
-  color: var(--riso);
-  margin-bottom: 2px;
-}
-
-/* ====== SOS BAR ====== */
-.sos {
-  background: var(--ink);
-  color: var(--paper);
-  padding: 10px 14px;
-  margin: 12px 0 18px;
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  position: relative;
-  border-left: 6px solid var(--riso);
-  flex-wrap: wrap;
-}
-.sos .siren {
-  background: var(--riso);
-  color: var(--ink);
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 22px;
-  padding: 2px 10px;
-  letter-spacing: 0.04em;
-}
-.sos .body {
-  flex: 1 1 280px;
-  font-family: 'DM Mono', monospace;
-  font-size: 13px;
-}
-.sos .body b { color: var(--riso); }
-.sos .countdown {
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 28px;
-  letter-spacing: 0.05em;
-}
-.sos .claim {
-  background: var(--paper);
-  color: var(--ink);
-  border: 0;
-  padding: 6px 14px;
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 18px;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-  text-transform: uppercase;
-}
-.sos .claim:hover { background: var(--riso); color: var(--ink); }
-
-/* ====== TOP TABS ====== */
-nav.zones {
-  display: flex;
-  margin-bottom: 22px;
-  border-bottom: 2px solid var(--ink);
-}
-nav.zones button {
-  flex: 1;
-  background: transparent;
-  border: 0;
-  border-right: 1px dashed var(--ink);
-  padding: 10px 8px;
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 22px;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-  color: var(--ink);
-  position: relative;
-  text-align: left;
-}
-nav.zones button:last-child { border-right: 0; }
-nav.zones button:hover { background: var(--paper-2); }
-nav.zones button[aria-current="true"] {
-  background: var(--ink);
-  color: var(--paper);
-}
-nav.zones button[aria-current="true"]::after {
-  content: '←';
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--riso);
-}
-nav.zones .num {
-  font-family: 'Special Elite', monospace;
-  font-size: 10px;
-  display: block;
-  letter-spacing: 0;
-  opacity: 0.7;
-}
-
-/* ====== ZONES ====== */
-.zone { display: none; }
-.zone[data-active] { display: block; }
-
-.kicker {
-  font-family: 'Special Elite', monospace;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--riso);
-  margin-bottom: 6px;
-}
-
-/* ====== MAP ====== */
-.map-wrap {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 18px;
-  align-items: start;
-}
-@media (max-width: 820px) { .map-wrap { grid-template-columns: 1fr; } }
-
-.map {
-  position: relative;
-  background: var(--paper);
-  border: 1.5px solid var(--ink);
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-  box-shadow: 6px 6px 0 var(--ink);
-}
-.map-annotations { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; display: block; }
-.maplibre-map { position: absolute; inset: 0; z-index: 1; }
-.maplibre-map .maplibregl-canvas { filter: contrast(1.04) grayscale(0.85) brightness(1.02); }
-.maplibre-map .maplibregl-control-container { display: none !important; }
-.map .paper-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 2; background: var(--paper); mix-blend-mode: multiply; opacity: 0.18; }
-.maplibregl-marker { cursor: pointer; }
-
-.marker {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  z-index: 3;
-}
-.marker .dot {
-  width: 14px; height: 14px;
-  background: var(--riso);
-  border-radius: 50%;
-  border: 2px solid var(--ink);
-  position: relative;
-  z-index: 2;
-}
-.marker .ring {
-  position: absolute;
-  inset: -3px;
-  border: 2px solid var(--riso);
-  border-radius: 50%;
-  animation: pulse-ring 1.6s infinite;
-  z-index: 1;
-}
-.marker .label {
-  position: absolute;
-  left: 22px;
-  top: -2px;
-  font-family: 'Special Elite', monospace;
-  font-size: 11px;
-  text-transform: uppercase;
-  white-space: nowrap;
-  background: var(--paper);
-  padding: 1px 5px;
-  border: 1px solid var(--ink);
-  letter-spacing: 0.02em;
-}
-.marker.active .label { background: var(--riso); color: var(--ink); }
-
-.map .legend, .map .compass {
-  position: absolute;
-  background: var(--paper);
-  border: 1px solid var(--ink);
-}
-.map .legend {
-  bottom: 8px; left: 8px;
-  padding: 6px 10px;
-  font-family: 'Special Elite', monospace;
-  font-size: 10px;
-  text-transform: uppercase;
-  line-height: 1.5;
-}
-.map .legend .swatch { display: inline-block; width: 8px; height: 8px; background: var(--riso); border: 1px solid var(--ink); border-radius: 50%; margin-right: 4px; vertical-align: middle; }
-.map .compass {
-  top: 12px; right: 12px;
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 11px;
-  text-align: center;
-  width: 38px;
-  padding: 4px 0 6px;
-}
-.map .compass .arrow { display: block; font-size: 26px; color: var(--riso); line-height: 0.8; }
-
-/* sidebar */
-.sidebar > * + * { margin-top: 16px; }
-.partner-card {
-  border: 1.5px solid var(--ink);
-  background: var(--paper);
-  padding: 12px 14px;
-  position: relative;
-  box-shadow: 4px 4px 0 var(--ink);
-  transition: transform 0.12s;
-}
-.partner-card.active { background: var(--ink); color: var(--paper); }
-.partner-card.active h3 { color: var(--riso); }
-.partner-card.active .chip { color: var(--paper); border-color: var(--paper); }
-.partner-card.active .chip.access { background: var(--riso); color: var(--ink); border-color: var(--ink); }
-.partner-card h3 {
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 28px;
-  line-height: 0.95;
-  letter-spacing: 0.01em;
-  margin-bottom: 4px;
-}
-.partner-card .role {
-  font-family: 'Special Elite', monospace;
-  font-size: 11px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-.partner-card .meta-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
-.partner-card .chip {
-  font-size: 10px;
-  font-family: 'Special Elite', monospace;
-  text-transform: uppercase;
-  border: 1px solid currentColor;
-  padding: 1px 5px;
-}
-.partner-card .chip.access { background: var(--riso); color: var(--ink); border-color: var(--ink); }
-.partner-card .pulse-info {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 11px;
-  font-family: 'Special Elite', monospace;
-}
-.partner-card .pulse-dot { width: 8px; height: 8px; background: var(--riso); border-radius: 50%; animation: pulse 1.2s infinite; }
-.partner-card .check-in {
-  display: block;
-  width: 100%;
-  margin-top: 10px;
-  background: var(--riso);
-  color: var(--ink);
-  border: 2px solid var(--ink);
-  padding: 6px 0;
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 18px;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-  text-transform: uppercase;
-}
-.partner-card .check-in:hover { background: var(--ink); color: var(--riso); }
-
-/* crew sparks */
-.spark-feed { border: 1.5px solid var(--ink); padding: 10px 12px; background: var(--paper); }
-.spark-feed h4 {
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 22px; margin-bottom: 6px;
-  display: flex; align-items: center; gap: 8px;
-}
-.spark-feed h4::after { content: ''; flex: 1; border-top: 2px dotted var(--ink); }
-.spark { display: flex; gap: 8px; font-size: 12px; padding: 6px 0; border-bottom: 1px dashed var(--ink); }
-.spark:last-child { border-bottom: 0; }
-.spark .who { font-family: 'Special Elite', monospace; font-size: 11px; background: var(--ink); color: var(--paper); padding: 0 5px; height: fit-content; text-transform: uppercase; }
-.spark .what { flex: 1; }
-.spark .me-too {
-  background: var(--paper); border: 1px solid var(--ink); cursor: pointer;
-  font-family: 'Special Elite', monospace; font-size: 10px;
-  padding: 2px 6px; text-transform: uppercase; align-self: start;
-}
-.spark .me-too:hover { background: var(--riso); }
-
-/* margin notes */
-.margin-note {
-  background: var(--paper);
-  border: 1px solid var(--ink);
-  border-left: 3px solid var(--riso);
-  padding: 12px 14px;
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  position: relative;
-  line-height: 1.5;
-}
-.margin-note::before {
-  content: 'MARGIN NOTE //';
-  display: block;
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 12px; letter-spacing: 0.06em;
-  color: var(--riso); margin-bottom: 4px;
-}
-
-/* ====== BULLETIN BOARD ====== */
-.bulletin {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
-  margin-top: 8px;
-}
-.bulletin-item {
-  background: var(--paper);
-  border: 1.5px solid var(--ink);
-  padding: 14px 14px 10px;
-  position: relative;
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  line-height: 1.45;
-  box-shadow: 3px 3px 0 var(--ink);
-}
-.bulletin-item .tag {
-  display: inline-block;
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  background: var(--ink); color: var(--paper);
-  padding: 1px 6px;
-  margin-bottom: 6px;
-}
-.bulletin-item .tag.red { background: var(--riso); color: var(--ink); }
-.bulletin-item p { margin-bottom: 6px; }
-.bulletin-item .who {
-  font-family: 'Special Elite', monospace;
-  font-size: 10px;
-  text-transform: uppercase;
-  border-top: 1px dashed var(--ink);
-  padding-top: 4px;
-  color: var(--muted);
-}
-
-/* ====== CALL SHEET ====== */
-.callsheet {
-  margin-top: 28px;
-  border: 1.5px solid var(--ink);
-  padding: 22px 22px 28px;
-  position: relative;
-  background: var(--paper);
-}
-.callsheet::before {
-  content: 'WK.07';
-  position: absolute;
-  top: -12px; left: 24px;
-  background: var(--paper);
-  padding: 0 10px;
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 18px; letter-spacing: 0.06em;
-}
-.callsheet header { text-align: center; border-bottom: 3px solid var(--ink); padding-bottom: 8px; margin-bottom: 14px; }
-.callsheet header h2 {
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: clamp(40px, 7vw, 64px);
-  letter-spacing: 0.02em; line-height: 0.9;
-}
-.callsheet header h2 .red { color: var(--riso); }
-.callsheet header .strap { font-family: 'Special Elite', monospace; font-size: 11px; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.05em; }
-.callsheet .columns { columns: 3; column-gap: 22px; column-rule: 1px solid var(--ink); font-size: 12px; }
-@media (max-width: 720px) { .callsheet .columns { columns: 1; } }
-.callsheet .columns h3 { font-family: 'Big Shoulders Stencil Display', sans-serif; font-size: 18px; margin-bottom: 4px; break-after: avoid; }
-.callsheet .columns p { margin-bottom: 12px; break-inside: avoid; }
-.callsheet .columns .sig { font-family: 'Special Elite', monospace; font-size: 10px; text-transform: uppercase; color: var(--muted); }
-
-/* ====== WALL ====== */
-.wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 22px; }
-.postcard {
-  background: var(--paper);
-  border: 1px solid var(--ink);
-  padding: 12px;
-  position: relative;
-  box-shadow: 5px 5px 0 var(--ink);
-}
-.postcard .stamp {
-  position: absolute; top: 12px; right: 12px;
-  background: var(--paper); color: var(--ink);
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 11px; padding: 2px 6px; letter-spacing: 0.05em;
-  border: 1px solid var(--ink);
-}
-.postcard .accent { height: 4px; background: var(--ink); margin-bottom: 14px; }
-.postcard .accent.r { background: var(--riso); }
-.postcard .meta { font-family: 'Special Elite', monospace; font-size: 10px; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.03em; }
-.postcard p { font-size: 12px; line-height: 1.45; }
-.postcard .who { margin-top: 8px; font-family: 'Special Elite', monospace; font-size: 10px; text-transform: uppercase; border-top: 1px dashed var(--ink); padding-top: 4px; }
-
-.wall-section-h {
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 36px; margin: 28px 0 12px;
-}
-
-/* ====== LEDGER ====== */
-.ledger {
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  border: 1.5px solid var(--ink);
-  padding: 22px;
-  background: var(--paper);
-}
-.ledger h2 {
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: clamp(40px, 6vw, 56px);
-  line-height: 0.95; margin-bottom: 4px;
-}
-.ledger .strap { font-family: 'Special Elite', monospace; font-size: 11px; text-transform: uppercase; margin-bottom: 14px; }
-.ledger pre {
-  font-family: 'DM Mono', monospace; font-size: 12px;
-  white-space: pre; overflow-x: auto; line-height: 1.6;
-}
-.ledger .total {
-  margin-top: 14px; padding-top: 10px;
-  border-top: 2px dashed var(--ink);
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 24px;
-}
-.ledger .total b { color: var(--riso); }
-.ledger .progress {
-  height: 16px; border: 2px solid var(--ink); margin-top: 8px;
-  background: var(--paper); position: relative; overflow: hidden;
-}
-.ledger .progress::after {
-  content: ''; position: absolute; inset: 0;
-  background: repeating-linear-gradient(45deg, var(--ink) 0 3px, transparent 3px 6px);
-  width: 75.8%;
-}
-
-/* ====== YOU ====== */
-.you { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-@media (max-width: 720px) { .you { grid-template-columns: 1fr; } }
-.you-block {
-  border: 1.5px solid var(--ink);
-  padding: 18px;
-  background: var(--paper);
-  box-shadow: 4px 4px 0 var(--ink);
-}
-.you-block h3 { font-family: 'Big Shoulders Stencil Display', sans-serif; font-size: 28px; margin-bottom: 8px; }
-.big-num {
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: clamp(64px, 10vw, 96px);
-  line-height: 0.85; color: var(--riso);
-  margin: 6px 0 4px;
-}
-.big-num small { font-size: 0.4em; color: var(--ink); margin-left: 6px; }
-
-.patches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
-.patch {
-  aspect-ratio: 1;
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  text-align: center;
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 12px; line-height: 1.05;
-  padding: 8px; position: relative; letter-spacing: 0.04em;
-}
-.patch.earned { background: var(--riso); color: var(--ink); }
-.patch.locked { color: var(--muted); border-style: dashed; }
-.patch::before {
-  content: ''; position: absolute; inset: 4px;
-  border: 1px dashed currentColor; border-radius: 50%;
-}
-
-.scrap-preview {
-  height: 200px;
-  border: 1px dashed var(--ink);
-  position: relative;
-  background:
-    linear-gradient(135deg, transparent 49%, var(--ink) 49% 50%, transparent 51%) 0 0/8px 8px,
-    var(--paper);
-  overflow: hidden;
-}
-.scrap-preview .label {
-  position: absolute; bottom: 8px; left: 8px;
-  background: var(--ink); color: var(--paper);
-  padding: 2px 6px;
-  font-family: 'Special Elite', monospace; font-size: 10px; text-transform: uppercase;
-}
-.scrap-preview .pages {
-  position: absolute; inset: 16px;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-}
-.scrap-preview .pages > div {
-  background: var(--paper); border: 1px solid var(--ink);
-  position: relative;
-}
-.scrap-preview .pages > div:nth-child(odd)::after {
-  content: ''; position: absolute; inset: 4px;
-  background: repeating-linear-gradient(0deg, var(--ink) 0 1px, transparent 1px 6px);
-  opacity: 0.4;
-}
-.scrap-preview .pages > div:nth-child(even)::after {
-  content: ''; position: absolute; inset: 6px;
-  background: radial-gradient(circle, var(--ink) 24%, transparent 26%) 0 0/8px 8px;
-  opacity: 0.3;
-}
-
-/* ====== INSTRUCTIONS PANEL ====== */
-.instr {
-  border: 1.5px dashed var(--ink);
-  padding: 14px 16px;
-  margin-top: 14px;
-  background: repeating-linear-gradient(0deg, transparent 0 22px, rgba(20,20,20,0.04) 22px 23px), var(--paper);
-  font-size: 12px;
-  font-family: 'DM Mono', monospace;
-  line-height: 1.55;
-  position: relative;
-}
-.instr-h {
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 18px; letter-spacing: 0.06em; margin-bottom: 8px;
-  color: var(--riso);
-}
-.instr ol { margin: 0 0 10px 18px; padding: 0; }
-.instr li { margin-bottom: 6px; }
-.instr li b { font-family: 'Special Elite', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
-.instr p { font-family: 'Special Elite', monospace; font-size: 11px; text-transform: uppercase; line-height: 1.5; color: var(--muted); margin: 0; }
-
-/* ====== TICKER ====== */
-.ticker {
-  margin-top: 32px;
-  background: var(--ink); color: var(--paper);
-  padding: 8px 0; overflow: hidden;
-  border-top: 2px solid var(--riso);
-  border-bottom: 2px solid var(--riso);
-}
-.ticker .track {
-  display: inline-block; white-space: nowrap;
-  animation: ticker 60s linear infinite;
-  font-family: 'Special Elite', monospace; font-size: 12px;
-  text-transform: uppercase; letter-spacing: 0.06em;
-}
-.ticker .track span { padding: 0 28px; }
-.ticker .track .red { color: var(--riso); }
-
-/* ====== FOOTER NAV ====== */
-footer.tabs {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: var(--paper);
-  border-top: 3px double var(--ink);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  z-index: 800;
-  box-shadow: 0 -6px 0 rgba(20,20,20,0.04);
-}
-footer.tabs button {
-  border: 0; background: transparent;
-  border-right: 1px dashed var(--ink);
-  padding: 10px 4px;
-  font-family: 'Big Shoulders Stencil Display', sans-serif;
-  font-size: 18px; cursor: pointer; text-align: center;
-  letter-spacing: 0.04em;
-}
-footer.tabs button:last-child { border-right: 0; }
-footer.tabs button[aria-current="true"] { background: var(--ink); color: var(--paper); }
-footer.tabs button .num {
-  display: block; font-family: 'Special Elite', monospace;
-  font-size: 9px; letter-spacing: 0; opacity: 0.7;
-}
-
-</style>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+<!-- ====== AUTH OVERLAY ====== -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-box">
+    <h1>VOLUNTEER<span class="slash">//</span>HUB</h1>
+    <div class="subtitle">MON2000 · Volunteering in Practice · Monash University</div>
+    <div class="divider"></div>
+    <div class="tagline">Sign in with your Monash Google account to post, contribute to the partner wiki, and complete your fortnightly reflections.</div>
+    <button class="btn-google" id="btnGoogle">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      SIGN IN WITH GOOGLE
+    </button>
+    <button class="skip" id="authSkip">Browse as guest →</button>
+    <div class="footer-note">Your data stays within the Monash ecosystem. We only use your name and email.</div>
+  </div>
+</div>
+
+<!-- ====== AUTH BAR (shown when browsing as guest) ====== -->
+<div class="auth-bar" id="authBar" hidden>
+  Sign in to post, contribute to the wiki, and complete reflections
+  <button class="btn-signin" id="barSignin">SIGN IN →</button>
+</div>
+
+<!-- ====== TOAST CONTAINER ====== -->
+<div class="toast-container" id="toastContainer"></div>
+
 <main>
   <!-- ====== MASTHEAD ====== -->
   <header class="masthead">
@@ -684,6 +48,11 @@ footer.tabs button .num {
       <div>SEMESTER 1, 2026</div>
       <div>MON2000 — VOLUNTEERING IN PRACTICE</div>
       <div>MONASH UNIVERSITY</div>
+      <div class="user-profile" id="userProfile" hidden>
+        <img class="user-avatar" src="" alt="Profile">
+        <span class="user-name"></span>
+        <button class="btn-signout" id="btnSignout">SIGN OUT</button>
+      </div>
     </div>
     <div class="weather">
       <span class="big">47</span>
@@ -709,7 +78,9 @@ footer.tabs button .num {
     <button data-zone="you"><span class="num">[04]</span>YOU</button>
   </nav>
 
-  <!-- ====== THE MAP ====== -->
+  <!-- ============================================================
+       ZONE 1: THE MAP
+       ============================================================ -->
   <section class="zone" data-zone="map" data-active>
     <div class="map-wrap">
       <div class="map" id="map" aria-label="Map of partner sites in Melbourne">
@@ -779,122 +150,132 @@ footer.tabs button .num {
       <div class="columns">
         <h3>MON 04 / FOOD</h3>
         <p>FoodFilled requires six volunteers 14:00–17:00 for a food-rescue run in Brunswick. Closed-toe shoes; some lifting required.<br><span class="sig">— K., volunteer coordinator</span></p>
-
         <h3>TUE 05 / TEXTILES</h3>
         <p>SisterWorks Footscray. Sorting and packaging garments for a community order, 10:00–13:00. New volunteers welcome.<br><span class="sig">— A.</span></p>
-
         <h3>WED 06 / SORTING</h3>
         <p>St Kilda Mums, after-hours sorting, 19:00–21:30. Cots, prams, and baby clothing. Warm clothing recommended.<br><span class="sig">— J.</span></p>
-
         <h3>THU 07 / KITCHEN</h3>
         <p>MSA Wholefoods, Clayton campus. Kitchen prep and service, 11:30–14:30. Meal provided at end of shift; hairnets supplied.<br><span class="sig">— L.</span></p>
-
         <h3>FRI 08 / OUTREACH</h3>
         <p>Dixon House neighbourhood drop-in, 13:00–16:00. Conversation, tea, and group activities. Mandarin speakers especially welcome.<br><span class="sig">— P.</span></p>
-
         <h3>SAT 09 / RESCUE</h3>
         <p>FoodFilled produce sort at Footscray markets, 06:30–09:30. Early start; closed-toe shoes.<br><span class="sig">— K.</span></p>
-
         <h3>SUN 10 / OPEN HOUSE</h3>
         <p>SisterWorks community open house. Open to the cohort and guests. Volunteer hours are not logged for this event.<br><span class="sig">— A.</span></p>
       </div>
     </article>
   </section>
 
-  <!-- ====== THE WALL ====== -->
+  <!-- ============================================================
+       ZONE 2: THE WALL (sub-tabs: Postcards / Bulletin / Wiki)
+       ============================================================ -->
   <section class="zone" data-zone="wall">
-    <div class="kicker">// THE COHORT WALL · WEEK 07</div>
-    <div class="wall">
-      <div class="postcard">
-        <div class="accent r"></div>
-        <div class="stamp">WK 07</div>
-        <div class="meta">ST KILDA MUMS · 4 HRS</div>
-        <p>Sorted 31 cot kits and updated the inventory. Items are now ready for distribution to families on the waiting list.</p>
-        <div class="who">— @vol_037</div>
-      </div>
-      <div class="postcard">
-        <div class="accent"></div>
-        <div class="stamp">WK 07</div>
-        <div class="meta">SISTERWORKS · 3 HRS</div>
-        <p>Trained on the textile bench by Anwar and completed sorting for the Wednesday community order.</p>
-        <div class="who">— @vol_004</div>
-      </div>
-      <div class="postcard">
-        <div class="accent"></div>
-        <div class="stamp">WK 07</div>
-        <div class="meta">FOODFILLED · 3 HRS</div>
-        <p>Brunswick food-rescue run. Recovered 41 kg of produce, redirected to the partner lunchbox programme.</p>
-        <div class="who">— @vol_112</div>
-      </div>
-      <div class="postcard">
-        <div class="accent r"></div>
-        <div class="stamp">WK 07</div>
-        <div class="meta">DIXON HOUSE · 3 HRS</div>
-        <p>Group activity session at the neighbourhood drop-in. Multilingual conversation circle and afternoon tea.</p>
-        <div class="who">— @vol_222</div>
-      </div>
-      <div class="postcard">
-        <div class="accent"></div>
-        <div class="stamp">WK 06</div>
-        <div class="meta">MSA WHOLEFOODS · 3 HRS</div>
-        <p>Kitchen prep and service shift, including clean-down. A short, well-organised rotation.</p>
-        <div class="who">— @vol_059</div>
-      </div>
-      <div class="postcard">
-        <div class="accent r"></div>
-        <div class="stamp">WK 06</div>
-        <div class="meta">ST KILDA MUMS · 4 HRS</div>
-        <p>Pram and stroller quality check and sorting. Twelve units processed and prepared for re-homing.</p>
-        <div class="who">— @vol_148</div>
+    <div class="kicker">// THE WALL · SEMESTER 1, 2026</div>
+
+    <div class="sub-tabs" role="tablist">
+      <button data-sub="postcards" aria-current="true">POSTCARDS</button>
+      <button data-sub="bulletin">BULLETIN BOARD</button>
+      <button data-sub="wiki">PARTNER WIKI</button>
+    </div>
+
+    <!-- ---- Postcards ---- -->
+    <div class="sub-zone" data-sub="postcards" data-active>
+      <div class="wall">
+        <div class="postcard" style="position:relative">
+          <div class="accent r"></div><div class="stamp">WK 07</div>
+          <div class="card-meta">ST KILDA MUMS · 4 HRS</div>
+          <p>Sorted 31 cot kits and updated the inventory. Items are now ready for distribution to families on the waiting list.</p>
+          <div class="who">— @vol_037</div>
+        </div>
+        <div class="postcard" style="position:relative">
+          <div class="accent"></div><div class="stamp">WK 07</div>
+          <div class="card-meta">SISTERWORKS · 3 HRS</div>
+          <p>Trained on the textile bench by Anwar and completed sorting for the Wednesday community order.</p>
+          <div class="who">— @vol_004</div>
+        </div>
+        <div class="postcard" style="position:relative">
+          <div class="accent"></div><div class="stamp">WK 07</div>
+          <div class="card-meta">FOODFILLED · 3 HRS</div>
+          <p>Brunswick food-rescue run. Recovered 41 kg of produce, redirected to the partner lunchbox programme.</p>
+          <div class="who">— @vol_112</div>
+        </div>
+        <div class="postcard" style="position:relative">
+          <div class="accent r"></div><div class="stamp">WK 07</div>
+          <div class="card-meta">DIXON HOUSE · 3 HRS</div>
+          <p>Group activity session at the neighbourhood drop-in. Multilingual conversation circle and afternoon tea.</p>
+          <div class="who">— @vol_222</div>
+        </div>
+        <div class="postcard" style="position:relative">
+          <div class="accent"></div><div class="stamp">WK 06</div>
+          <div class="card-meta">MSA WHOLEFOODS · 3 HRS</div>
+          <p>Kitchen prep and service shift, including clean-down. A short, well-organised rotation.</p>
+          <div class="who">— @vol_059</div>
+        </div>
+        <div class="postcard" style="position:relative">
+          <div class="accent r"></div><div class="stamp">WK 06</div>
+          <div class="card-meta">ST KILDA MUMS · 4 HRS</div>
+          <p>Pram and stroller quality check and sorting. Twelve units processed and prepared for re-homing.</p>
+          <div class="who">— @vol_148</div>
+        </div>
       </div>
     </div>
 
-    <h3 class="wall-section-h">// THE BULLETIN</h3>
-    <p style="font-family:'Special Elite',monospace; font-size:11px; text-transform:uppercase; color: var(--muted); margin-bottom: 12px;">Cohort-to-cohort notices. Refreshed weekly.</p>
-    <div class="bulletin">
-      <div class="bulletin-item">
-        <span class="tag red">LOST &amp; FOUND</span>
-        <p>Black water bottle left at SisterWorks on Wednesday. Held at the front desk.</p>
-        <div class="who">@vol_201 · WK 07</div>
+    <!-- ---- Bulletin Board ---- -->
+    <div class="sub-zone" data-sub="bulletin">
+      <button class="btn-compose auth-required" id="btnCompose">+ NEW POST</button>
+
+      <div class="compose-form auth-required" id="composeForm" hidden>
+        <h4>// SHARE WITH THE COHORT</h4>
+        <div class="field compose-row">
+          <div class="field" style="flex:1">
+            <label for="postType">Type</label>
+            <select id="postType">
+              <option value="insight">Insight</option>
+              <option value="tip">Tip</option>
+              <option value="question">Ask</option>
+              <option value="carpool">Carpool</option>
+              <option value="swap">Shift Swap</option>
+              <option value="lost-found">Lost &amp; Found</option>
+            </select>
+          </div>
+          <div class="field" style="flex:1">
+            <label for="postPartner">Partner</label>
+            <select id="postPartner">
+              <option value="all">Any / General</option>
+              <option value="st-kilda-mums">St Kilda Mums</option>
+              <option value="sisterworks">SisterWorks</option>
+              <option value="foodfilled">FoodFilled</option>
+              <option value="msa-wholefoods">MSA Wholefoods</option>
+              <option value="dixon-house">Dixon House</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="postBody">Your post</label>
+          <textarea id="postBody" placeholder="Share an insight, ask a question, offer a ride..."></textarea>
+        </div>
+        <button class="btn-post" id="btnPostSubmit">POST →</button>
       </div>
-      <div class="bulletin-item">
-        <span class="tag">CARPOOL</span>
-        <p>Driving Clayton to Footscray markets, Saturday 06:00, for the produce sort. Three seats; drop on the return if convenient.</p>
-        <div class="who">@vol_088 · WK 07</div>
-      </div>
-      <div class="bulletin-item">
-        <span class="tag">SHIFT SWAP</span>
-        <p>Looking to swap a Tuesday 14:00 FoodFilled shift for a Wednesday SisterWorks textiles slot.</p>
-        <div class="who">@vol_037 · WK 07</div>
-      </div>
-      <div class="bulletin-item">
-        <span class="tag">FREE</span>
-        <p>Children's rain jackets available — surplus from a personal donation drive. For cohort use.</p>
-        <div class="who">@vol_148 · WK 06</div>
-      </div>
-      <div class="bulletin-item">
-        <span class="tag">ASK</span>
-        <p>Anyone done a Mandarin-language shift at Dixon House? Looking for a few tips before mine on Friday.</p>
-        <div class="who">@vol_222 · WK 07</div>
-      </div>
-      <div class="bulletin-item">
-        <span class="tag red">FOUND</span>
-        <p>Set of keys (small charm attached) found outside St Kilda Mums on Monday afternoon. At reception.</p>
-        <div class="who">@vol_059 · WK 06</div>
-      </div>
+
+      <div class="filters" id="bulletinFilters"></div>
+      <div class="bulletin" id="bulletinFeed"></div>
     </div>
 
-    <h3 class="wall-section-h">// MARGIN NOTES</h3>
-    <div style="display:grid; gap:14px; grid-template-columns: repeat(auto-fill,minmax(260px,1fr));">
-      <div class="margin-note">SISTERWORKS // Wednesday textile sessions are coordinated by Anwar. The last tram (Route 96) departs around 21:30.</div>
-      <div class="margin-note">ST KILDA MUMS // Wheelchair access via the side roller door. Front step at the main entrance is 14 cm. Contact the coordinator before your first visit.</div>
-      <div class="margin-note">FOODFILLED // Closed-toe shoes required. Bring a water bottle for the Brunswick rescue run.</div>
-      <div class="margin-note">MSA WHOLEFOODS // A meal is provided after a three-hour shift. Vegan by default — flag allergies before service begins.</div>
-      <div class="margin-note">DIXON HOUSE // A Mandarin numerals reference card is kept behind the main desk for new volunteers.</div>
+    <!-- ---- Partner Wiki ---- -->
+    <div class="sub-zone" data-sub="wiki">
+      <div class="wiki-header">
+        <h3>// PARTNER WIKI</h3>
+        <select class="wiki-partner-select" id="wikiPartner"></select>
+        <select class="wiki-semester-select" id="wikiSemester"></select>
+      </div>
+      <div class="wiki-categories" id="wikiCategories"></div>
+      <div class="wiki-entries" id="wikiEntries"></div>
     </div>
   </section>
 
-  <!-- ====== THE LEDGER ====== -->
+  <!-- ============================================================
+       ZONE 3: THE LEDGER
+       ============================================================ -->
   <section class="zone" data-zone="ledger">
     <div class="ledger">
       <div class="kicker">// PUBLIC, APPEND-ONLY, NEVER LEADERBOARDED</div>
@@ -919,28 +300,32 @@ footer.tabs button .num {
 </pre>
       <div class="total">COHORT TOTAL THIS SEM: <b>546 HRS</b> / TARGET 720 / WK.07 OF 12</div>
       <div class="progress" aria-label="75.8% of cohort target reached"></div>
-      <p style="font-family:'Special Elite',monospace; font-size:11px; text-transform:uppercase; margin-top:10px; color: var(--muted);">
+      <p style="font-family:var(--ff-accent); font-size:11px; text-transform:uppercase; margin-top:12px; color:var(--muted);">
         Hours are credited to organisations rather than individuals. Per-student totals are visible only to the student and the unit team. No leaderboards.
       </p>
     </div>
   </section>
 
-  <!-- ====== YOU ====== -->
+  <!-- ============================================================
+       ZONE 4: YOU
+       ============================================================ -->
   <section class="zone" data-zone="you">
     <div class="you">
+      <!-- Hours -->
       <div class="you-block">
         <div class="kicker">// YOU · @VOL_037</div>
         <h3>HOURS</h3>
         <div class="big-num">14<small>/ 24 PLACEMENT</small></div>
-        <p style="font-family:'Special Elite',monospace; font-size:11px; text-transform:uppercase;">
+        <p style="font-family:var(--ff-accent); font-size:11px; text-transform:uppercase;">
           10 hrs left to meet the placement requirement<br>
           · 3 partners visited · 5 postcards posted · 1 SOS claimed
         </p>
       </div>
 
+      <!-- Patches -->
       <div class="you-block">
         <h3>PATCHES</h3>
-        <p style="font-family:'Special Elite',monospace; font-size:10px; text-transform:uppercase; color: var(--muted); margin-bottom: 4px;">Personal achievements. Not visible to partners or on any leaderboard.</p>
+        <p style="font-family:var(--ff-accent); font-size:10px; text-transform:uppercase; color:var(--muted); margin-bottom:4px;">Personal achievements. Not visible to partners or on any leaderboard.</p>
         <div class="patches">
           <div class="patch earned">FIRST<br>SHIFT</div>
           <div class="patch earned">BIKE<br>COMMUTE</div>
@@ -949,24 +334,33 @@ footer.tabs button .num {
           <div class="patch locked">SOS<br>CLAIM</div>
           <div class="patch locked">DRIFTER</div>
         </div>
-        <div class="instr">
-          <p class="instr-h">// HOW PATCHES WORK</p>
-          <ol>
-            <li><b>FIRST SHIFT</b> — earned at first check-out from any partner.</li>
-            <li><b>BIKE COMMUTE</b> — earned when you tick "bike" on transport at check-in.</li>
-            <li><b>LOTE PLACEMENT</b> — earned for any shift conducted in a language other than English.</li>
-            <li><b>NIGHT SHIFT</b> — earned for any check-in that starts after 18:00.</li>
-            <li><b>SOS CLAIM</b> — earned when you claim and complete a partner SOS before its deadline.</li>
-            <li><b>DRIFTER</b> — earned for three shifts at partners you'd never visited before.</li>
-          </ol>
-          <p>Patches are personal achievements only. They do not unlock features, are not visible to partner organisations, and never appear on a leaderboard.</p>
-        </div>
       </div>
 
-      <div class="you-block" style="grid-column: 1 / -1;">
+      <!-- Fortnightly Reflections -->
+      <div class="you-block reflection-block auth-required" style="grid-column:1/-1">
+        <div class="kicker">// FORTNIGHTLY REFLECTIONS</div>
+        <h3>REFLECTION CHATBOT</h3>
+        <p style="font-family:var(--ff-accent); font-size:11px; text-transform:uppercase; color:var(--muted); margin-bottom:4px;">
+          Every two weeks, have a guided 7-turn conversation about your volunteer experience. Your responses are private and feed into your scrapbook.
+        </p>
+
+        <div class="fortnight-grid" id="fortnightGrid"></div>
+
+        <div class="chat-window" id="chatWindow" hidden></div>
+        <div class="chat-input-row" id="chatInputRow" hidden>
+          <input type="text" class="chat-input" id="chatInput" placeholder="Type your response...">
+          <button class="chat-send" id="chatSend">SEND →</button>
+        </div>
+        <div class="turn-counter" id="turnCounter"></div>
+
+        <button class="btn-start-reflection" id="btnStartReflection">START REFLECTION →</button>
+      </div>
+
+      <!-- Scrapbook -->
+      <div class="you-block" style="grid-column:1/-1">
         <h3>SCRAPBOOK / IN PROGRESS</h3>
-        <p style="font-family:'Special Elite',monospace; font-size:11px; text-transform:uppercase; margin-bottom: 8px; color: var(--muted);">
-          AUTO-COMPILED FROM YOUR POSTCARDS, REFLECTION CARDS &amp; HOURS · PRINT-READY WK.12
+        <p style="font-family:var(--ff-accent); font-size:11px; text-transform:uppercase; margin-bottom:8px; color:var(--muted);">
+          AUTO-COMPILED FROM YOUR POSTCARDS, REFLECTION TRANSCRIPTS &amp; HOURS · PRINT-READY WK.12
         </p>
         <div class="scrap-preview">
           <div class="pages">
@@ -975,25 +369,11 @@ footer.tabs button .num {
           </div>
           <div class="label">5 PAGES · UPDATES SUNDAY 18:00 · PAGED.JS PRINT EXPORT</div>
         </div>
-        <div class="instr">
-          <p class="instr-h">// HOW THE SCRAPBOOK WORKS</p>
-          <ol>
-            <li><b>AUTO-COMPILED</b> from your postcards (chronological), reflection cards, hours-by-partner, and patches earned.</li>
-            <li><b>SNAPSHOTS</b> every Sunday at 18:00 when the week's edition closes — scroll back through prior weeks at any time.</li>
-            <li><b>BLANK PAGES</b> — three at the back for handwritten notes you photograph and upload.</li>
-            <li><b>PRINT-READY</b> at the end of the semester (Wk 12) as an A5 stapled booklet PDF, generated server-side via Paged.js.</li>
-            <li><b>PRIVATE</b> — only you and the unit team see your scrapbook. A separate cohort scrapbook is exported with consenting postcards only.</li>
-          </ol>
-          <p>The scrapbook serves as the unit's reflective-assessment artefact for MON2000.</p>
-        </div>
       </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <p style="font-family:'Special Elite',monospace; font-size:10px; text-transform:uppercase; color: var(--muted); margin-top: 36px; text-align:center; letter-spacing: 0.06em;">
-    MON2000 Volunteer Hub · Prototype · Monash University, 2026
-  </p>
+  <p class="footer-note">MON2000 Volunteer Hub · Monash University, 2026</p>
 </main>
 
 <footer class="tabs" role="tablist" aria-label="Zone selector (mobile)">
@@ -1003,110 +383,6 @@ footer.tabs button .num {
   <button data-zone="you"><span class="num">[04]</span>YOU</button>
 </footer>
 
-<script>
-// ===== zone switching =====
-const zones = document.querySelectorAll('section.zone');
-function go(zone) {
-  zones.forEach(s => s.toggleAttribute('data-active', s.dataset.zone === zone));
-  document.querySelectorAll('nav.zones button, footer.tabs button').forEach(b => {
-    b.setAttribute('aria-current', b.dataset.zone === zone ? 'true' : 'false');
-  });
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-document.querySelectorAll('nav.zones button, footer.tabs button').forEach(b => {
-  b.addEventListener('click', () => go(b.dataset.zone));
-});
-
-// ===== SOS countdown =====
-(function tickCountdown() {
-  const el = document.getElementById('countdown');
-  if (!el) return;
-  const start = Date.now() + (2 * 3600 + 18 * 60 + 42) * 1000;
-  setInterval(() => {
-    const diff = Math.max(0, start - Date.now());
-    const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
-    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-    el.textContent = `${h}:${m}:${s}`;
-  }, 1000);
-})();
-
-// ===== partner data =====
-const partners = [
-  { name: 'ST KILDA MUMS',  role: 'SORTING / REHOMING — 4 HR SHIFT',   chips: ['WHEELCHAIR ✓','TRAM 96','BIKE PARK'],     pulse: '3 ON THE FLOOR NOW · 14 HRS NEEDED' },
-  { name: 'SISTERWORKS',    role: 'TEXTILES BENCH — 3 HR SHIFT',        chips: ['LIFT ✓','TRAIN F\'SCRAY','TEA'],          pulse: '2 ON THE FLOOR NOW · 8 HRS NEEDED'  },
-  { name: 'FOODFILLED',     role: 'RESCUE RUN — 3 HR SHIFT',            chips: ['DRIVE','LIFT REQ','EARLY START'],         pulse: '5 ON THE FLOOR NOW · 12 HRS NEEDED' },
-  { name: 'MSA WHOLEFOODS', role: 'KITCHEN PREP — 3 HR SHIFT',          chips: ['WHEELCHAIR ✓','BUS','MEAL INCL'],         pulse: '4 ON THE FLOOR NOW · 6 HRS NEEDED'  },
-  { name: 'DIXON HOUSE',    role: 'NEIGHBOURHOOD DROP-IN — 3 HR SHIFT', chips: ['MANDARIN','TRAM 86','TEA'],               pulse: '1 ON THE FLOOR NOW · 9 HRS NEEDED'  },
-];
-const partnerCard = document.getElementById('partnerCard');
-function renderPartner(i) {
-  const p = partners[i];
-  partnerCard.querySelector('h3').textContent = p.name;
-  partnerCard.querySelector('.role').textContent = p.role;
-  partnerCard.querySelector('.meta-row').innerHTML = p.chips.map((c, idx) =>
-    `<span class="chip ${idx===0?'access':''}">${c}</span>`).join('');
-  partnerCard.querySelector('.pulse-info').innerHTML =
-    `<span class="pulse-dot"></span><span>${p.pulse}</span>`;
-}
-function setActive(i) {
-  document.querySelectorAll('.marker').forEach(m =>
-    m.classList.toggle('active', +m.dataset.org === i));
-  renderPartner(i);
-}
-
-// ===== MapLibre map (free CARTO basemap, riso-filtered) =====
-// To swap for Mapbox GL: replace `maplibregl` with `mapboxgl`, set
-//   mapboxgl.accessToken = 'YOUR_TOKEN';
-// then load Mapbox's JS/CSS in <head> and use a Mapbox style URL such as
-//   'mapbox://styles/mapbox/light-v11'.
-const partnerCoords = [
-  [145.0050, -37.8675], // St Kilda Mums  (Carnegie / Caulfield-ish)
-  [144.8970, -37.8000], // SisterWorks    (Footscray)
-  [144.9605, -37.7700], // FoodFilled     (Brunswick)
-  [145.1362, -37.9105], // MSA Wholefoods (Monash Clayton)
-  [145.2400, -37.9856], // Dixon House    (Doveton)
-];
-if (typeof maplibregl !== 'undefined') {
-  const map = new maplibregl.Map({
-    container: 'maplibre-map',
-    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-    center: [145.05, -37.86],
-    zoom: 10.1,
-    interactive: true,
-    attributionControl: false,
-  });
-  map.on('load', () => {
-    partnerCoords.forEach((coord, i) => {
-      const el = document.createElement('div');
-      el.className = 'marker' + (i === 0 ? ' active' : '');
-      el.dataset.org = String(i);
-      el.innerHTML =
-        `<span class="ring"${i > 0 ? ` style="animation-delay: -${(i * 0.3).toFixed(1)}s"` : ''}></span>` +
-        '<span class="dot"></span>' +
-        `<span class="label">${partners[i].name}</span>`;
-      el.addEventListener('click', (e) => { e.stopPropagation(); setActive(i); });
-      new maplibregl.Marker({ element: el, anchor: 'center' })
-        .setLngLat(coord)
-        .addTo(map);
-    });
-  });
-}
-
-// ===== JOIN toggle =====
-document.querySelectorAll('.me-too').forEach(b => {
-  b.addEventListener('click', () => {
-    if (b.textContent === 'JOIN') {
-      b.textContent = 'IN ✓';
-      b.style.background = 'var(--riso)';
-      b.style.color = 'var(--ink)';
-    } else {
-      b.textContent = 'JOIN';
-      b.style.background = 'var(--paper)';
-      b.style.color = 'var(--ink)';
-    }
-  });
-});
-</script>
+<script type="module" src="js/app.js"></script>
 </body>
 </html>

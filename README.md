@@ -1,45 +1,63 @@
 # MON2000 Volunteer Hub
-An editorial-style web prototype for a multi-turn, interactive bulletin-board replacement supporting Monash University's MON2000 *Volunteering in Practice* unit.
+
+A professional, editorial-style web platform for Monash University's MON2000 *Volunteering in Practice* unit. Volunteers spend 12 weeks embedded at a partner organisation and use the Hub to share experiences, build institutional knowledge, and reflect on their growth.
 
 ## Authors
+
 Charles Crabtree, Senior Lecturer, School of Social Sciences, Monash University and K-Club Professor, University College, Korea University.
 
 ## Overview
-MON2000 students complete 24 hours of volunteering placement with partner organisations (St Kilda Mums, SisterWorks, FoodFilled, MSA Wholefoods, Dixon House, etc.) alongside online modules and reflective assessments. The Volunteer Hub is a cohort-visible, real-time alternative to the static bulletin board: a map, a wall of postcards, a transparent hours ledger, and a personal scrapbook view, structured around a weekly turn cycle (Mon 06:00 call sheet → Sun 18:00 edition close).
 
-The visual treatment is editorial and restrained: paper-tone background, a single fluoro accent (riso red `#FF4438`), distinctive display typography (Big Shoulders Stencil Display), and minimal motion.
+MON2000 students complete 24 hours of volunteering placement with partner organisations (St Kilda Mums, SisterWorks, FoodFilled, MSA Wholefoods, Dixon House) alongside online modules and reflective assessments. The Volunteer Hub provides:
 
-## Mechanics demonstrated
-- Live partner-site pulse and clickable markers
-- SOS bar with live countdown and "claim shift" CTA
-- Monday call-sheet broadsheet (3-column print-ready layout)
-- Crew sparks with "ME TOO" two-tap matching
-- Margin notes and postcard wall (halftone styled)
-- Public, never-leaderboarded hours ledger
-- Personal hours, iron-on patches, and scrapbook-in-progress preview
-- Ticker, photocopy-noise texture, snap-cut motion
+- **Interactive map** with partner pins, live SOS bar, and weekly call-sheet broadsheet
+- **Bulletin board** where students post insights, tips, questions, carpools, and shift swaps — with filtering, spark reactions, and threaded replies
+- **Partner wiki** — accumulated institutional knowledge per partner, browsable by category (logistics, culture, tips, accessibility) and by semester, creating a cross-cohort "hidden curriculum"
+- **Fortnightly reflection chatbot** — a 7-turn guided conversation every two weeks, with adaptive branching that selects follow-up questions based on keyword/sentiment detection
+- **Google Sign-In** for Monash students, gating interactive features while allowing guest browsing
+- **Hours ledger** and **personal scrapbook** for tracking and reflection
+
+The visual treatment is editorial and restrained: paper-tone background, fluoro riso-red accent, gold accent for wiki elements, stencil display typography, and minimal motion.
 
 ## Requirements
-Any modern browser (Chrome / Firefox / Safari / Edge). Internet connection on first load to fetch Google Fonts; otherwise fully offline.
+
+Any modern browser (Chrome / Firefox / Safari / Edge). Internet connection for Google Fonts, MapLibre tiles, and Firebase (when configured).
 
 ## Replication
+
 1. Clone the repository.
 2. Open `index.html` directly in a browser, or serve the directory:
    ```
    python3 -m http.server 8000
    ```
    then visit `http://localhost:8000/`.
-3. No build step, no dependencies, no backend.
+3. The app runs in **demo mode** by default with mock data — no Firebase project needed.
+4. To enable live data, see the Firebase setup instructions in `WARP.md`.
 
-## Map
-The prototype uses **MapLibre GL JS** with the free **CARTO Positron** basemap, then applies a CSS filter (grayscale + contrast) plus a paper-color multiply overlay and a warm radial wash to produce the riso look. Five partner sites are placed at approximate Melbourne coordinates and rendered as custom HTML markers with the existing pulse animation.
+## Repository Layout
 
-To swap for **Mapbox GL JS**: see the comment above `partnerCoords` in `index.html`. You will need a Mapbox access token; MapLibre is the default because it works on GitHub Pages with no key.
+```
+index.html              — app shell
+css/style.css           — style system (paper/ink/riso/gold palette)
+js/app.js               — core orchestrator
+js/auth.js              — Google Sign-In + auth state
+js/firebase-config.js   — Firebase init with demo mode
+js/data.js              — partner data, semester config, chatbot question banks
+js/map.js               — MapLibre GL JS map
+js/bulletin.js          — bulletin board CRUD + filtering
+js/wiki.js              — partner wiki + archive browser
+js/chatbot.js           — 7-turn adaptive reflection chatbot
+WARP.md                 — project context
+README.md               — this file
+```
 
-## Repository layout
-- `index.html` — the prototype.
-- `WARP.md` — Warp project context.
-- `README.md` — this file.
+## Architecture
+
+- **No build step** — vanilla HTML/CSS/JS with ES modules loaded via `<script type="module">`
+- **Firebase (CDN)** — Auth (Google Sign-In) + Cloud Firestore, loaded only when `DEMO_MODE = false`
+- **Demo mode** — default; all features work with rich mock data
+- **Progressive auth** — unauthenticated users browse everything read-only; sign-in unlocks posting, wiki contributions, and reflections
 
 ## Status
-Draft. The prototype is intended to pressure-test the visual direction before committing to a framework or backend. See the working plan for the 10 core / 10 stretch mechanics roadmap.
+
+Active. The platform is functional in demo mode and ready for Firebase integration when a project is provisioned.

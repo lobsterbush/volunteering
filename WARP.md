@@ -1,42 +1,53 @@
 # MON2000 Volunteer Hub
-**Status:** Draft
-**Description:** Editorial-style web prototype for an interactive bulletin-board replacement supporting Monash MON2000 *Volunteering in Practice*.
+**Status:** Active
+**Description:** Editorial-style web platform for Monash MON2000 *Volunteering in Practice* — with Google Sign-In, a real-time bulletin board, a partner wiki, and a fortnightly reflection chatbot.
 **Authors:** Charles Crabtree, Senior Lecturer, School of Social Sciences, Monash University and K-Club Professor, University College, Korea University.
-**Last Updated:** 2026-05-01
+**Last Updated:** 2026-05-06
 
 ## Files
-- `index.html` — single-file standalone prototype. No build step. Open in a browser.
-- `README.md` — overview and replication.
+- `index.html` — app shell: auth overlay, masthead, 4 zones, footer
+- `css/style.css` — full style system
+- `js/app.js` — core orchestrator: zone switching, toasts, SOS, bootstrap
+- `js/auth.js` — Google Sign-In flow, auth state, demo user
+- `js/firebase-config.js` — Firebase init with demo mode fallback
+- `js/data.js` — partner data, semester config, chatbot question banks
+- `js/map.js` — MapLibre GL JS map with partner markers
+- `js/bulletin.js` — bulletin board CRUD, filtering, spark reactions
+- `js/wiki.js` — partner wiki with category/semester navigation
+- `js/chatbot.js` — 7-turn fortnightly reflection chatbot
+- `README.md` — overview and replication
+- `WARP.md` — this file
 
 ## Tech Stack
-Vanilla HTML/CSS/JS, no build step. MapLibre GL JS 4.7.1 (CDN, unpkg) for the map. Google Fonts: Big Shoulders Stencil Display, Special Elite, DM Mono. Hosted via GitHub Pages from `main` branch root at https://lobsterbush.github.io/volunteering/.
+Vanilla HTML/CSS/JS with ES modules, no build step. MapLibre GL JS 4.7.1 (CDN). Google Fonts: Big Shoulders Stencil Display, Special Elite, DM Mono. Firebase SDK v11 loaded via CDN (Auth + Firestore). Hosted via GitHub Pages.
 
-## Map
-MapLibre GL JS with the free CARTO Positron basemap, lightly filtered (grayscale + soft paper multiply). Partner coordinates and a Mapbox GL swap-in note live in the JS block above `partnerCoords` in `index.html`.
+## Architecture
+- **Demo mode** (default): All features work with mock data. No Firebase project needed.
+- **Live mode**: Set `DEMO_MODE = false` in `js/firebase-config.js` and add Firebase config.
+- **Auth**: Google Sign-In popup, restricted to `@student.monash.edu` and `@monash.edu`.
 
 ## Aesthetic
-Clean editorial layout with a single fluoro accent. Paper (`#F1ECDF`) / ink (`#141414`) / riso red (`#FF4438`). Display: Big Shoulders Stencil Display. Accent: Special Elite. Body: DM Mono. Subtle paper texture; minimal motion.
+Paper (`#F1ECDF`) / Ink (`#141414`) / Riso Red (`#FF4438`) / Gold (`#C4A84A`). Display: Big Shoulders Stencil Display. Accent: Special Elite. Body: DM Mono (15px). 8px baseline grid.
 
 ## Zones (4-tab IA)
-1. **The Map** — partner pins on a Melbourne basemap, live SOS bar, crew sparks sidebar, Monday call-sheet broadsheet.
-2. **The Wall** — postcards from the week, classifieds-style bulletin board, and wiki-style margin notes from prior cohorts.
-3. **The Ledger** — public, append-only, never-leaderboarded record of cohort hours by partner and by week.
-4. **You** — personal hours, achievements (patches), and a scrapbook in progress.
+1. **The Map** — partner pins, SOS bar, crew sparks, call-sheet broadsheet.
+2. **The Wall** — Postcards | Bulletin Board (interactive, filterable) | Partner Wiki (cross-semester archive).
+3. **The Ledger** — public, never-leaderboarded hours ledger.
+4. **You** — hours, patches, reflection chatbot (7-turn adaptive conversations), scrapbook.
 
-## Mechanics in this prototype
-Live pulse · SOS countdown · crew-spark JOIN toggle · partner marker selection · call-sheet broadsheet · postcard wall · cohort bulletin board · margin notes · cohort hours ledger · patch wall · scrapbook preview.
+## Reflection Chatbot
+6 fortnightly periods. 7 turns per session. Adaptive branching via keyword/sentiment detection. Themed banks: first impressions → routines → skills → deeper engagement → impact → looking back.
 
-## Not yet implemented (stretch)
-Constellation view, time-scrubber, cohort weather (visual), audio postcards, manifesto, anonymous ask box, live floor view, wildcard week, Paged.js scrapbook export, solidarity radio.
-
-## Run
-Open `index.html` directly in any modern browser, or serve the directory and visit `http://localhost:8000/`. Requires internet for Google Fonts, MapLibre, and the CARTO basemap tiles.
+## Firebase Setup (for live mode)
+1. Create a Firebase project at `console.firebase.google.com`
+2. Enable Google Sign-In in Authentication → Sign-in method
+3. Create a Firestore database
+4. Register a web app and copy the config
+5. Paste into `js/firebase-config.js`, set `DEMO_MODE = false`
+6. Add `lobsterbush.github.io` to Authorized domains
 
 ## Hosted
-Live at https://lobsterbush.github.io/volunteering/ (GitHub Pages from `main` branch root). Repo: https://github.com/lobsterbush/volunteering.
+https://lobsterbush.github.io/volunteering/ (GitHub Pages, `main` branch root).
 
-## Next Steps
-- Awaiting feedback from program coordinator (Zareh).
-- If pursued, replace mock data with a real partner-shift feed (3–5 pilot partners).
-- Decide between auto-generated and co-edited weekly call sheet.
-- Decide whether margin notes persist across cohorts or wipe each semester.
+## Run
+Open `index.html` or serve via `python3 -m http.server 8000`.
