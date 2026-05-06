@@ -308,7 +308,7 @@ img { max-width: 100%; display: block; }
 .field-row > .field { flex: 1; }
 
 /* Filters */
-.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
 .filter-btn {
   font-family: var(--ff-body); font-size: 12px; font-weight: 500;
   padding: 5px 14px; border-radius: 100px;
@@ -319,6 +319,12 @@ img { max-width: 100%; display: block; }
 .filter-btn:hover { background: var(--surface-2); color: var(--text); }
 .filter-btn[aria-pressed="true"] {
   background: var(--text); color: #fff; border-color: var(--text);
+}
+.filter-sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+.filter-partner {
+  font-family: var(--ff-body); font-size: 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 100px; padding: 5px 12px; color: var(--text-2); cursor: pointer;
 }
 
 /* Post cards */
@@ -368,6 +374,39 @@ img { max-width: 100%; display: block; }
 }
 .reply strong { color: var(--text); font-weight: 600; }
 
+/* Reply form (inline) */
+.reply-form {
+  display: flex; gap: 8px; margin-top: 12px;
+  padding-top: 12px; border-top: 1px solid var(--border);
+}
+.reply-form[hidden] { display: none; }
+.reply-input {
+  flex: 1; font-family: var(--ff-body); font-size: 13px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 8px 12px; color: var(--text);
+}
+.reply-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+.reply-submit {
+  background: var(--accent); color: #fff; border: none;
+  border-radius: var(--radius-sm); padding: 8px 14px;
+  font-family: var(--ff-body); font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background var(--transition);
+}
+.reply-submit:hover { background: #c23d24; }
+
+/* Reply & promote buttons */
+.reply-btn, .promote-btn {
+  background: none; border: 1px solid var(--border);
+  border-radius: 100px; padding: 2px 10px;
+  font-family: var(--ff-body); font-size: 12px; color: var(--text-2);
+  cursor: pointer; transition: all var(--transition);
+}
+.reply-btn:hover { border-color: var(--text-2); color: var(--text); }
+.promote-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-light); }
+
+/* Form actions row */
+.form-actions { display: flex; gap: 8px; }
+
 /* ================================================================
    WIKI
    ================================================================ */
@@ -375,6 +414,7 @@ img { max-width: 100%; display: block; }
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   margin-bottom: 24px;
 }
+.wiki-controls .btn-primary { margin-left: auto; }
 .wiki-controls select {
   font-family: var(--ff-body); font-size: 13px;
   background: var(--surface); border: 1px solid var(--border);
@@ -574,6 +614,7 @@ img { max-width: 100%; display: block; }
    ================================================================ */
 .auth-required { display: none; }
 body.signed-in .auth-required { display: block; }
+body.signed-in .auth-required.btn-primary { display: inline-block; }
 body.signed-in .auth-overlay { display: none; }
 body.signed-in .auth-bar { display: none; }
 

@@ -1,7 +1,7 @@
 import { initAuth } from './auth.js';
 import { initMap } from './map.js';
-import { initBulletin } from './bulletin.js';
-import { initWiki } from './wiki.js';
+import { initBulletin, setWikiPromoter } from './bulletin.js';
+import { initWiki, promoteToWiki } from './wiki.js';
 import { initChatbot } from './chatbot.js';
 
 export function showToast(msg, type = '') {
@@ -32,6 +32,7 @@ async function boot() {
   initMap();
   initBulletin();
   initWiki();
+  setWikiPromoter(promoteToWiki);
   initChatbot();
   console.log('[App] Booted');
 }

@@ -87,6 +87,10 @@
             <option value="question">Question</option>
           </select>
         </div>
+        <div class="field">
+          <label for="postPartner">Partner</label>
+          <select id="postPartner"></select>
+        </div>
       </div>
       <div class="field">
         <label for="postBody">Your post</label>
@@ -107,7 +111,35 @@
     <div class="wiki-controls">
       <select id="wikiPartner"></select>
       <select id="wikiSemester"></select>
+      <button class="btn-primary auth-required" id="btnWikiCompose">+ New entry</button>
     </div>
+
+    <div class="compose-form auth-required" id="wikiComposeForm" hidden>
+      <h4>Contribute to the wiki</h4>
+      <div class="field-row">
+        <div class="field">
+          <label for="wikiNewPartner">Partner</label>
+          <select id="wikiNewPartner"></select>
+        </div>
+        <div class="field">
+          <label for="wikiNewCategory">Category</label>
+          <select id="wikiNewCategory"></select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="wikiNewTitle">Title</label>
+        <input type="text" id="wikiNewTitle" placeholder="Short, descriptive title">
+      </div>
+      <div class="field">
+        <label for="wikiNewBody">Body</label>
+        <textarea id="wikiNewBody" placeholder="Share what you know — practical details, cultural context, tips for future volunteers…"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" id="wikiNewSubmit">Add to wiki</button>
+        <button class="btn-secondary" id="wikiNewCancel">Cancel</button>
+      </div>
+    </div>
+
     <div class="wiki-cats" id="wikiCats"></div>
     <div class="wiki-list" id="wikiList"></div>
   </section>
