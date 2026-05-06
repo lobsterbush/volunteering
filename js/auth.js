@@ -1,4 +1,4 @@
-import { auth, DEMO_MODE } from './firebase-config.js';
+import { auth, DEMO_MODE, firebaseAuth } from './firebase-config.js';
 import { showToast } from './app.js';
 
 const demoUser = { uid: 'demo-vol-037', displayName: 'Jordan Lee', email: 'jlee0042@student.monash.edu', photoURL: null };
@@ -46,24 +46,37 @@ export async function initAuth() {
     return;
   }
 
+  if (!firebaseAuth || !auth) {
+    console.error('[Auth] Firebase not initialized — auth:', auth, 'module:', firebaseAuth);
+    // Fall back to demo so the button isn't dead
+    document.getElementById('btnGoogle')?.addEventListener('click', () => applySignedIn(demoUser));
+    document.getElementById('barSignin')?.addEventListener('click', () => applySignedIn(demoUser));
+    document.getElementById('btnSignout')?.addEventListener('click', applySignedOut);
+    return;
+  }
+
   try {
-    const { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } =
-      await import('https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js');
+    const { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } = firebaseAuth;
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ hd: 'monash.edu' });
 
     const doSignIn = async () => {
+      console.log('[Auth] Sign-in clicked, opening popup...');
       try {
         const result = await signInWithPopup(auth, provider);
         const email = result.user.email || '';
         if (!email.endsWith('@student.monash.edu') && !email.endsWith('@monash.edu')) {
           await signOut(auth); showToast('Use a Monash Google account'); return;
         }
-      } catch (e) { if (e.code !== 'auth/popup-closed-by-user') showToast('Sign-in failed'); }
+      } catch (e) {
+        console.error('[Auth] Sign-in error:', e);
+        if (e.code !== 'auth/popup-closed-by-user') showToast('Sign-in failed — ' + (e.message || ''));
+      }
     };
     document.getElementById('btnGoogle')?.addEventListener('click', doSignIn);
     document.getElementById('barSignin')?.addEventListener('click', doSignIn);
     document.getElementById('btnSignout')?.addEventListener('click', () => signOut(auth));
     onAuthStateChanged(auth, u => u ? applySignedIn({ uid: u.uid, displayName: u.displayName || 'Volunteer', email: u.email, photoURL: u.photoURL }) : applySignedOut());
-  } catch (e) { console.warn('[Auth]', e); }
+    console.log('[Auth] Listeners attached');
+  } catch (e) { console.error('[Auth] Setup failed:', e); }
 }

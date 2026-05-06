@@ -16,12 +16,17 @@ const firebaseConfig = {
 };
 
 let app = null, auth = null, db = null;
+let firebaseAuth = null; // holds the full firebase/auth module
+
 if (!DEMO_MODE) {
   try {
-    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js');
-    const { getAuth }       = await import('https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js');
-    const { getFirestore }  = await import('https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js');
-    app = initializeApp(firebaseConfig); auth = getAuth(app); db = getFirestore(app);
-  } catch (e) { console.warn('[Firebase] Init failed:', e); }
+    const appMod  = await import('https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js');
+    firebaseAuth  = await import('https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js');
+    const dbMod   = await import('https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js');
+    app  = appMod.initializeApp(firebaseConfig);
+    auth = firebaseAuth.getAuth(app);
+    db   = dbMod.getFirestore(app);
+    console.log('[Firebase] Ready');
+  } catch (e) { console.error('[Firebase] Init failed:', e); }
 }
-export { app, auth, db };
+export { app, auth, db, firebaseAuth };
