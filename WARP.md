@@ -1,53 +1,53 @@
 # MON2000 Volunteer Hub
 **Status:** Active
-**Description:** Editorial-style web platform for Monash MON2000 *Volunteering in Practice* — with Google Sign-In, a real-time bulletin board, a partner wiki, and a fortnightly reflection chatbot.
+**Description:** Web platform for Monash MON2000 *Volunteering in Practice* — Google Sign-In, bulletin board with replies, partner wiki with cross-semester archiving, and Gemini-powered reflection chatbot.
 **Authors:** Charles Crabtree, Senior Lecturer, School of Social Sciences, Monash University and K-Club Professor, University College, Korea University.
 **Last Updated:** 2026-05-06
 
 ## Files
-- `index.html` — app shell: auth overlay, masthead, 4 zones, footer
-- `css/style.css` — full style system
-- `js/app.js` — core orchestrator: zone switching, toasts, SOS, bootstrap
-- `js/auth.js` — Google Sign-In flow, auth state, demo user
-- `js/firebase-config.js` — Firebase init with demo mode fallback
-- `js/data.js` — partner data, semester config, chatbot question banks
+- `index.html` — single-page app shell: auth overlay, header, 4-zone tabs, mobile nav, footer
+- `css/style.css` — full style system (warm professional palette)
+- `js/app.js` — orchestrator: zone switching, toasts, board→wiki promotion wiring, boot
+- `js/auth.js` — Firebase Google Sign-In, domain enforcement, demo fallback
+- `js/firebase-config.js` — Firebase project config, Gemini API key, DEMO_MODE toggle
+- `js/data.js` — 5 partners, semester config, 7 mock posts, 33 wiki entries, 6 chatbot question banks
 - `js/map.js` — MapLibre GL JS map with partner markers
-- `js/bulletin.js` — bulletin board CRUD, filtering, spark reactions
-- `js/wiki.js` — partner wiki with category/semester navigation
-- `js/chatbot.js` — 7-turn fortnightly reflection chatbot
-- `README.md` — overview and replication
-- `WARP.md` — this file
+- `js/bulletin.js` — board CRUD, type+partner filtering, inline replies, spark reactions, wiki promotion
+- `js/wiki.js` — wiki entries, filter by partner/semester/category, new entry form, board→wiki intake
+- `js/chatbot.js` — Gemini 2.0 Flash 7-turn reflection chatbot with keyword fallback
 
 ## Tech Stack
-Vanilla HTML/CSS/JS with ES modules, no build step. MapLibre GL JS 4.7.1 (CDN). Google Fonts: Big Shoulders Stencil Display, Special Elite, DM Mono. Firebase SDK v11 loaded via CDN (Auth + Firestore). Hosted via GitHub Pages.
+Vanilla HTML/CSS/JS with ES modules, no build step. MapLibre GL JS 4.7.1 (CDN). Google Fonts: Inter, DM Mono. Firebase SDK v11.7.1 via CDN (Auth + Firestore). Gemini 2.0 Flash API (REST, key in firebase-config.js). Hosted via GitHub Pages.
 
 ## Architecture
-- **Demo mode** (default): All features work with mock data. No Firebase project needed.
-- **Live mode**: Set `DEMO_MODE = false` in `js/firebase-config.js` and add Firebase config.
-- **Auth**: Google Sign-In popup, restricted to `@student.monash.edu` and `@monash.edu`.
+- **Live mode** (current): `DEMO_MODE = false`. Firebase project `monash-volunteering` configured. Gemini API key hardcoded.
+- **Demo mode**: Set `DEMO_MODE = true` to run with mock data and no external services.
+- **Auth**: Firebase `signInWithPopup` (Google). No `hd` parameter — post-sign-in check enforces `@student.monash.edu` and `@monash.edu`. Falls back to demo user if Firebase init fails.
+- **Boot timing**: `readyState` check in app.js handles top-level `await` in firebase-config.js finishing after `DOMContentLoaded`.
+- **Board → Wiki**: bulletin.js exposes `setWikiPromoter(fn)`; app.js wires it to `promoteToWiki()` from wiki.js. Clicking 📖 Wiki on an insight/tip post switches to Wiki zone with form pre-filled.
 
-## Aesthetic
-Paper (`#F1ECDF`) / Ink (`#141414`) / Riso Red (`#FF4438`) / Gold (`#C4A84A`). Display: Big Shoulders Stencil Display. Accent: Special Elite. Body: DM Mono (15px). 8px baseline grid.
+## Palette
+Bg `#FAFAF7` / Surface `#FFFFFF` / Accent `#DC4A2D` / Gold `#92702F` / Green `#16A34A`. Body: Inter 15px. Mono: DM Mono. 8px grid.
 
 ## Zones (4-tab IA)
-1. **The Map** — partner pins, SOS bar, crew sparks, call-sheet broadsheet.
-2. **The Wall** — Postcards | Bulletin Board (interactive, filterable) | Partner Wiki (cross-semester archive).
-3. **The Ledger** — public, never-leaderboarded hours ledger.
-4. **You** — hours, patches, reflection chatbot (7-turn adaptive conversations), scrapbook.
+1. **Board** — cohort post feed (reflections, insights, tips, questions). Type + partner filters. Compose form with partner selector. Inline replies. Spark reactions. 📖 Wiki promotion on insight/tip posts.
+2. **Wiki** — partner knowledge base. Filter by partner, semester, category (logistics/culture/tips/accessibility). New entry form. Upvotes. 33 seed entries across 5 partners.
+3. **Reflect** — Gemini-powered 7-turn fortnightly chatbot. 6 periods with themed prompts. System prompt as reflective practice facilitator. Falls back to keyword branching without API key.
+4. **You** — personal dashboard (hours, reflections, posts, wiki contributions). Currently static mock data.
 
 ## Reflection Chatbot
-6 fortnightly periods. 7 turns per session. Adaptive branching via keyword/sentiment detection. Themed banks: first impressions → routines → skills → deeper engagement → impact → looking back.
+Gemini 2.0 Flash via REST (`generativelanguage.googleapis.com`). System prompt in chatbot.js (~250 tokens). Per-turn context includes fortnight theme, turn number, and full conversation history. `temperature: 0.8`, `maxOutputTokens: 200`. Fallback: regex keyword matching → generic probes.
 
-## Firebase Setup (for live mode)
-1. Create a Firebase project at `console.firebase.google.com`
-2. Enable Google Sign-In in Authentication → Sign-in method
-3. Create a Firestore database
-4. Register a web app and copy the config
-5. Paste into `js/firebase-config.js`, set `DEMO_MODE = false`
-6. Add `lobsterbush.github.io` to Authorized domains
+## Firebase Config
+Project: `monash-volunteering`. Auth domain: `monash-volunteering.firebaseapp.com`. Authorized domains must include `lobsterbush.github.io`.
 
 ## Hosted
 https://lobsterbush.github.io/volunteering/ (GitHub Pages, `main` branch root).
 
 ## Run
-Open `index.html` or serve via `python3 -m http.server 8000`.
+`python3 -m http.server 8000` or open `index.html` directly.
+
+## Next Steps
+- Firestore persistence for posts, wiki entries, and reflection transcripts (currently in-memory only).
+- Dynamic week/semester display in header from `data.js` semester config.
+- You dashboard wired to actual user data instead of static mock numbers.
