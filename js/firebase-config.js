@@ -2,13 +2,17 @@
  * VOLUNTEER HUB — Configuration
  * Firebase + Gemini API keys. Demo mode by default.
  */
-export const DEMO_MODE = true;
+export const DEMO_MODE = false;
 export const GEMINI_API_KEY = ''; // Paste your Gemini API key here for LLM-powered reflections
 
 const firebaseConfig = {
-  apiKey: 'YOUR_API_KEY', authDomain: 'YOUR_PROJECT.firebaseapp.com',
-  projectId: 'YOUR_PROJECT_ID', storageBucket: 'YOUR_PROJECT.appspot.com',
-  messagingSenderId: '000000000000', appId: '1:000000000000:web:0000000000000000',
+  apiKey: 'AIzaSyB7g4TBZ6XJeAWlImxpBoXkMBDOOPCHQSE',
+  authDomain: 'monash-volunteering.firebaseapp.com',
+  projectId: 'monash-volunteering',
+  storageBucket: 'monash-volunteering.firebasestorage.app',
+  messagingSenderId: '518069607082',
+  appId: '1:518069607082:web:f6d374beba246f3ff54ed3',
+  measurementId: 'G-CFJQR8S4B2',
 };
 
 let app = null, auth = null, db = null;
