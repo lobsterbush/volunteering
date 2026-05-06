@@ -26,11 +26,11 @@ Visit `http://localhost:8000`. Runs in demo mode with mock data by default.
 
 ## Gemini Chatbot
 
-To enable LLM-powered reflections, add a Gemini API key in `js/firebase-config.js`:
-```js
-export const GEMINI_API_KEY = 'your-key-here';
-```
-Without a key, the chatbot uses structured keyword-based branching.
+To enable LLM-powered reflections:
+1. Click the ⚙ gear icon in the header
+2. Paste your Gemini API key and click **Save key**
+
+The key is stored in your browser's `localStorage` — it never touches the repository or any server. The Reflect zone shows a green "✦ Gemini active" pill when a key is configured. Without a key, the chatbot falls back to structured keyword-based branching.
 
 ## Status
 

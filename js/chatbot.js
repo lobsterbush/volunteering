@@ -6,7 +6,7 @@
 import { questionBanks, currentFortnight, partners } from './data.js';
 import { isSignedIn, getUser } from './auth.js';
 import { showToast } from './app.js';
-import { GEMINI_API_KEY } from './firebase-config.js';
+import { getGeminiKey } from './firebase-config.js';
 
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 const MAX_TURNS = 7;
@@ -29,11 +29,21 @@ Your role:
 export function initChatbot() {
   renderFortnightGrid();
   setupChatInput();
+  updateGeminiStatus();
   const btn = document.getElementById('btnStartReflection');
   if (btn) btn.addEventListener('click', () => {
     if (!isSignedIn()) { showToast('Sign in to start a reflection'); return; }
     startSession(currentFortnight());
   });
+}
+
+/** Update the Gemini status pill in the Reflect zone. */
+export function updateGeminiStatus() {
+  const el = document.getElementById('geminiStatus');
+  if (!el) return;
+  const active = !!getGeminiKey();
+  el.className = `gemini-status ${active ? 'on' : 'off'}`;
+  el.textContent = active ? '✦ Gemini active' : 'Gemini not configured';
 }
 
 function renderFortnightGrid() {
@@ -96,7 +106,7 @@ function botSays(text) {
   win.appendChild(typing);
   win.scrollTop = win.scrollHeight;
 
-  const delay = GEMINI_API_KEY ? 600 + Math.random() * 400 : 500;
+  const delay = getGeminiKey() ? 600 + Math.random() * 400 : 500;
   setTimeout(() => {
     typing.remove();
     const bubble = document.createElement('div');
@@ -132,11 +142,12 @@ async function handleResponse(text) {
 }
 
 async function generateNext(studentText) {
-  if (!GEMINI_API_KEY) return getFallbackQuestion(studentText);
+  const apiKey = getGeminiKey();
+  if (!apiKey) return getFallbackQuestion(studentText);
 
   try {
     const turnContext = `This is turn ${session.turnIndex + 1} of ${MAX_TURNS}. ${session.turnIndex === MAX_TURNS - 1 ? 'This is the final turn — give a warm closing summary.' : ''}`;
-    const res = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
+    const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

@@ -3,7 +3,20 @@
  * Firebase + Gemini API keys. Demo mode by default.
  */
 export const DEMO_MODE = false;
-export const GEMINI_API_KEY = ''; // Paste your Gemini API key here for LLM-powered reflections
+export const GEMINI_API_KEY = ''; // Fallback; prefer localStorage via getGeminiKey()
+
+const LS_KEY = 'vh_gemini_key';
+
+/** Read Gemini key — localStorage first, then the hardcoded constant. */
+export function getGeminiKey() {
+  return localStorage.getItem(LS_KEY) || GEMINI_API_KEY || '';
+}
+
+/** Save Gemini key to localStorage (never touches the repo). */
+export function setGeminiKey(key) {
+  if (key) localStorage.setItem(LS_KEY, key.trim());
+  else localStorage.removeItem(LS_KEY);
+}
 
 const firebaseConfig = {
   apiKey: 'AIzaSyB7g4TBZ6XJeAWlImxpBoXkMBDOOPCHQSE',
