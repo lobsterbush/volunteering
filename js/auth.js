@@ -58,7 +58,9 @@ export async function initAuth() {
   try {
     const { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } = firebaseAuth;
     const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ hd: 'monash.edu' });
+    // Don't set hd — it only allows one domain and would exclude
+    // @student.monash.edu accounts. The post-sign-in check below
+    // enforces both @monash.edu and @student.monash.edu.
 
     const doSignIn = async () => {
       console.log('[Auth] Sign-in clicked, opening popup...');
