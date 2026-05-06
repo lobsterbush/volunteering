@@ -161,7 +161,7 @@ img { max-width: 100%; display: block; }
    ================================================================ */
 .nav-tabs {
   display: flex; gap: 4px;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
   border-bottom: 1px solid var(--border);
   overflow-x: auto;
 }
@@ -190,11 +190,11 @@ img { max-width: 100%; display: block; }
 
 .section-title {
   font-size: 20px; font-weight: 700; letter-spacing: -0.01em;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 .section-desc {
-  font-size: 13px; color: var(--text-2);
-  margin-bottom: 20px;
+  font-size: 14px; color: var(--text-2); line-height: 1.5;
+  margin-bottom: 28px;
 }
 
 /* ================================================================
@@ -206,7 +206,7 @@ img { max-width: 100%; display: block; }
   overflow: hidden;
   aspect-ratio: 21/9;
   position: relative;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
   box-shadow: var(--shadow-sm);
 }
 .map-container .maplibre-map { position: absolute; inset: 0; }
@@ -256,7 +256,7 @@ img { max-width: 100%; display: block; }
    BOARD (posts feed)
    ================================================================ */
 .compose-bar {
-  display: flex; gap: 8px; margin-bottom: 20px;
+  display: flex; gap: 8px; margin-bottom: 24px;
 }
 .compose-bar[hidden] { display: none; }
 .btn-primary {
@@ -308,7 +308,7 @@ img { max-width: 100%; display: block; }
 .field-row > .field { flex: 1; }
 
 /* Filters */
-.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
 .filter-btn {
   font-family: var(--ff-body); font-size: 12px; font-weight: 500;
   padding: 5px 14px; border-radius: 100px;
@@ -322,12 +322,12 @@ img { max-width: 100%; display: block; }
 }
 
 /* Post cards */
-.post-feed { display: flex; flex-direction: column; gap: 12px; }
+.post-feed { display: flex; flex-direction: column; gap: 16px; }
 .post-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 18px 20px;
+  padding: 20px 22px;
   box-shadow: var(--shadow-xs);
   animation: fadeIn 0.3s ease both;
   position: relative;
@@ -343,11 +343,11 @@ img { max-width: 100%; display: block; }
 .post-card .post-type.tip { background: var(--gold-light); color: var(--gold); }
 .post-card .post-type.reflection { background: var(--accent-light); color: var(--accent); }
 .post-card .post-type.question { background: var(--surface-2); color: var(--text-2); }
-.post-card .post-body { font-size: 14px; line-height: 1.6; margin-bottom: 10px; }
+.post-card .post-body { font-size: 14px; line-height: 1.6; margin-bottom: 14px; }
 .post-card .post-meta {
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   font-size: 12px; color: var(--text-3);
-  padding-top: 10px; border-top: 1px solid var(--border);
+  padding-top: 12px; border-top: 1px solid var(--border);
 }
 .post-card .post-meta .author { font-weight: 600; color: var(--text-2); }
 .post-card .spark-btn {
@@ -373,14 +373,14 @@ img { max-width: 100%; display: block; }
    ================================================================ */
 .wiki-controls {
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 .wiki-controls select {
   font-family: var(--ff-body); font-size: 13px;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: 8px 12px; color: var(--text);
 }
-.wiki-cats { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; }
+.wiki-cats { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 24px; }
 .wiki-cat-btn {
   font-family: var(--ff-body); font-size: 12px; font-weight: 500;
   padding: 5px 14px; border-radius: 100px;
@@ -390,22 +390,22 @@ img { max-width: 100%; display: block; }
 .wiki-cat-btn:hover { background: var(--gold-light); color: var(--gold); }
 .wiki-cat-btn[aria-pressed="true"] { background: var(--gold); color: #fff; border-color: var(--gold); }
 
-.wiki-list { display: flex; flex-direction: column; gap: 10px; }
+.wiki-list { display: flex; flex-direction: column; gap: 14px; }
 .wiki-entry {
   background: var(--surface);
   border: 1px solid var(--border);
   border-left: 3px solid var(--gold);
   border-radius: var(--radius);
-  padding: 16px 18px;
+  padding: 20px 22px;
   box-shadow: var(--shadow-xs);
   animation: fadeIn 0.25s ease both;
 }
 .wiki-entry .cat-label {
   font-size: 11px; font-weight: 700; text-transform: uppercase;
-  color: var(--gold); letter-spacing: 0.04em; margin-bottom: 2px;
+  color: var(--gold); letter-spacing: 0.04em; margin-bottom: 4px;
 }
-.wiki-entry .entry-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-.wiki-entry .entry-body { font-size: 14px; color: var(--text-2); line-height: 1.6; margin-bottom: 8px; }
+.wiki-entry .entry-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.wiki-entry .entry-body { font-size: 14px; color: var(--text-2); line-height: 1.6; margin-bottom: 12px; }
 .wiki-entry .entry-meta {
   display: flex; gap: 14px; flex-wrap: wrap;
   font-size: 12px; color: var(--text-3);
@@ -422,14 +422,14 @@ img { max-width: 100%; display: block; }
 .reflect-header { margin-bottom: 20px; }
 .fortnight-grid {
   display: grid; grid-template-columns: repeat(6, 1fr);
-  gap: 8px; margin-bottom: 20px;
+  gap: 10px; margin-bottom: 28px;
 }
 @media (max-width: 500px) { .fortnight-grid { grid-template-columns: repeat(3, 1fr); } }
 .fn-badge {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 10px 6px; text-align: center;
+  padding: 14px 8px; text-align: center;
   cursor: pointer; transition: all var(--transition);
 }
 .fn-badge:hover { border-color: var(--text-2); }
@@ -509,7 +509,7 @@ img { max-width: 100%; display: block; }
   background: var(--accent); color: #fff; border: none;
   border-radius: var(--radius-sm);
   font-family: var(--ff-body); font-size: 15px; font-weight: 600;
-  cursor: pointer; margin-top: 12px;
+  cursor: pointer; margin-top: 20px;
   transition: background var(--transition);
   box-shadow: var(--shadow-sm);
 }
@@ -519,21 +519,21 @@ img { max-width: 100%; display: block; }
 /* ================================================================
    YOU (Personal Dashboard)
    ================================================================ */
-.you-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.you-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 @media (max-width: 640px) { .you-grid { grid-template-columns: 1fr; } }
 .you-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 24px;
   box-shadow: var(--shadow-xs);
 }
-.you-card h3 { font-size: 14px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
-.you-card .big-num { font-size: 48px; font-weight: 800; line-height: 1; color: var(--accent); }
+.you-card h3 { font-size: 13px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+.you-card .big-num { font-size: 48px; font-weight: 800; line-height: 1; color: var(--accent); margin-bottom: 4px; }
 .you-card .big-num small { font-size: 16px; font-weight: 500; color: var(--text-3); margin-left: 4px; }
-.you-card .detail { font-size: 13px; color: var(--text-2); margin-top: 6px; }
+.you-card .detail { font-size: 13px; color: var(--text-2); margin-top: 10px; line-height: 1.5; }
 
-.progress-bar { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; margin-top: 8px; }
+.progress-bar { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; margin-top: 12px; }
 .progress-bar .fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s ease; }
 
 /* ================================================================
@@ -582,9 +582,9 @@ body.signed-in .auth-bar { display: none; }
    ================================================================ */
 .site-footer {
   text-align: center; font-size: 12px; color: var(--text-3);
-  padding: 32px 0 16px;
+  padding: 40px 0 20px;
   border-top: 1px solid var(--border);
-  margin-top: 40px;
+  margin-top: 56px;
 }
 .mobile-nav {
   position: fixed; bottom: 0; left: 0; right: 0;
