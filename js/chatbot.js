@@ -1,248 +1,205 @@
 /**
- * VOLUNTEER//HUB — Fortnightly Reflection Chatbot
- * 7-turn guided conversations that adapt follow-up questions
- * based on keyword/sentiment detection in student responses.
+ * VOLUNTEER HUB — Reflection Chatbot
+ * Gemini-powered adaptive 7-turn conversations.
+ * Falls back to structured prompts when no API key is set.
  */
-
-import { questionBanks, currentFortnight, semester } from './data.js';
+import { questionBanks, currentFortnight, partners } from './data.js';
 import { isSignedIn, getUser } from './auth.js';
 import { showToast } from './app.js';
+import { GEMINI_API_KEY } from './firebase-config.js';
 
-let activeSession = null; // { fortnight, turnIndex, turns: [] }
-let completedFortnights = new Set(); // Track completed reflections
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const MAX_TURNS = 7;
 
-/* ── Keyword maps for branch selection ── */
-const branchKeywords = {
-  challenge:   ['hard','difficult','struggle','tough','frustrated','confus','overwhelm','challenge','problem','stress'],
-  person:      ['name','person','staff','manager','coordinator','anwar','colleague','mentor','friend','team member'],
-  surprise:    ['surprise','unexpected','didn\'t expect','shocked','amazed','wow','never thought'],
-  positive:    ['better','great','amazing','loved','wonderful','exceeded','fantastic','enjoy','happy'],
-  negative:    ['worse','disappoint','frustrat','boring','bad','annoying','difficult','not what'],
-  neutral:     ['same','expected','pretty much','as I thought','normal','fine','okay'],
-  routine:     ['routine','same thing','every day','pattern','structure','schedule','regular'],
-  chaotic:     ['different','never know','unpredictable','varies','chaos','random','changes'],
-  skills:      ['skill','learn','ability','technique','method','practice','competent','improve'],
-  social:      ['people','awkward','clique','left out','social','fit in','belong','connect'],
-  technical:   ['tool','system','software','machine','equipment','process','procedure','protocol'],
-  soft:        ['communicate','empathy','patience','listen','teamwork','flexible','adapt'],
-  yes:         ['yes','yeah','definitely','absolutely','i have','i did','took on'],
-  no:          ['no','not really','haven\'t','not yet','same as before','nothing new'],
-  conflict:    ['conflict','argument','disagree','tension','confrontation','clash','fight'],
-  emotional:   ['sad','cry','emotional','heartbreak','moved','upset','heavy','painful','grief'],
-  big:         ['big','significant','major','huge','real difference','changed','transformed'],
-  small:       ['small','little','minor','tiny bit','not sure if','subtle','modest'],
-  unsure:      ['unsure','don\'t know','hard to tell','maybe','not certain','who knows'],
-  achievement: ['accomplish','achieve','complete','finish','milestone','proud of doing','built'],
-  growth:      ['grew','growth','changed','develop','became','evolv','transform','matur'],
-};
+let session = null;
+let completedFortnights = new Set();
 
-/* ── Detect best branch ── */
-function detectBranch(text, branches) {
-  const lower = text.toLowerCase();
-  let bestMatch = 'default';
-  let bestScore = 0;
+const SYSTEM_PROMPT = `You are a warm, perceptive reflection facilitator for a university volunteering program (MON2000, Monash University). Students spend an entire 12-week semester embedded at one partner organisation.
 
-  for (const [branch, keywords] of Object.entries(branchKeywords)) {
-    if (!(branch in branches)) continue;
-    const score = keywords.filter(kw => lower.includes(kw)).length;
-    if (score > bestScore) { bestScore = score; bestMatch = branch; }
-  }
+Your role:
+- Guide a structured 7-turn reflection conversation about the student's recent volunteer experience
+- Be genuinely curious, empathetic, and specific — never generic or formulaic
+- Ask one clear question per turn. Follow up on what the student actually says.
+- If they mention a person, ask about that relationship. If they mention a challenge, explore it. If they give a short answer, gently probe deeper.
+- Adapt your language to match the student's tone — informal if they're casual, more thoughtful if they're reflective
+- On turn 7, provide a warm closing summary that names specific things they shared
+- Never be preachy. Never use bullet points. Keep responses to 2-3 sentences.
+- Do NOT number your questions or mention "Turn X of 7"`;
 
-  /* Short response → probe deeper */
-  if (text.split(/\s+/).length < 8 && branches.default) {
-    return 'default';
-  }
-
-  return bestMatch;
-}
-
-/* ── Public API ── */
 export function initChatbot() {
   renderFortnightGrid();
   setupChatInput();
-
-  const startBtn = document.getElementById('btnStartReflection');
-  if (startBtn) {
-    startBtn.addEventListener('click', () => {
-      if (!isSignedIn()) { showToast('Sign in to start a reflection'); return; }
-      startSession(currentFortnight());
-    });
-  }
+  const btn = document.getElementById('btnStartReflection');
+  if (btn) btn.addEventListener('click', () => {
+    if (!isSignedIn()) { showToast('Sign in to start a reflection'); return; }
+    startSession(currentFortnight());
+  });
 }
 
-/* ── Fortnight Grid ── */
 function renderFortnightGrid() {
   const grid = document.getElementById('fortnightGrid');
   if (!grid) return;
-
   const current = currentFortnight();
-  grid.innerHTML = questionBanks.map(bank => {
+  grid.innerHTML = questionBanks.map(b => {
     let cls = 'fn-badge';
-    if (completedFortnights.has(bank.fortnight)) cls += ' complete';
-    else if (bank.fortnight === current) cls += ' active';
-    else if (bank.fortnight > current) cls += ' locked';
-
-    return `
-      <div class="${cls}" data-fn="${bank.fortnight}">
-        <span class="fn-num">F${bank.fortnight}</span>
-        ${bank.weeks}
-      </div>`;
+    if (completedFortnights.has(b.fortnight)) cls += ' complete';
+    else if (b.fortnight === current) cls += ' active';
+    else if (b.fortnight > current) cls += ' locked';
+    return `<div class="${cls}" data-fn="${b.fortnight}"><span class="fn-num">F${b.fortnight}</span><span class="fn-label">${b.weeks}</span></div>`;
   }).join('');
 
   grid.querySelectorAll('.fn-badge:not(.locked)').forEach(el => {
     el.addEventListener('click', () => {
-      const fn = parseInt(el.dataset.fn);
-      if (completedFortnights.has(fn)) {
-        showToast(`Fortnight ${fn} already completed`);
-        return;
-      }
-      if (isSignedIn()) startSession(fn);
-      else showToast('Sign in to start a reflection');
+      const fn = +el.dataset.fn;
+      if (completedFortnights.has(fn)) { showToast('Already completed'); return; }
+      if (isSignedIn()) startSession(fn); else showToast('Sign in first');
     });
   });
 }
 
-/* ── Start Session ── */
 function startSession(fortnight) {
   const bank = questionBanks.find(b => b.fortnight === fortnight);
   if (!bank) return;
+  const user = getUser();
+  session = { fortnight, turnIndex: 0, history: [], bank, userName: user?.displayName || 'there' };
 
-  activeSession = { fortnight, turnIndex: 0, turns: [], bank };
+  const win = document.getElementById('chatWindow');
+  const input = document.getElementById('chatInputRow');
+  const btn = document.getElementById('btnStartReflection');
+  if (win) { win.hidden = false; win.innerHTML = ''; }
+  if (input) input.hidden = false;
+  if (btn) btn.style.display = 'none';
+  updateCounter();
 
-  const chatWindow = document.getElementById('chatWindow');
-  const chatInput  = document.getElementById('chatInputRow');
-  const startBtn   = document.getElementById('btnStartReflection');
-
-  if (chatWindow) { chatWindow.hidden = false; chatWindow.innerHTML = ''; }
-  if (chatInput)  chatInput.hidden = false;
-  if (startBtn)   startBtn.style.display = 'none';
-
-  updateTurnCounter();
-  botSays(bank.questions[0].text, 0);
+  const opener = `Hi ${session.userName.split(' ')[0]}! This is your Fortnight ${fortnight} reflection — "${bank.theme}." Let's talk about the last two weeks at your placement. ${getOpener(fortnight)}`;
+  botSays(opener);
 }
 
-/* ── Bot message ── */
-function botSays(text, turnIndex) {
-  const chatWindow = document.getElementById('chatWindow');
-  if (!chatWindow) return;
+function getOpener(fn) {
+  const openers = {
+    1: 'Tell me about your first impressions — what stood out to you when you arrived at your placement?',
+    2: 'Has a routine started to form? Walk me through what a recent session looked like.',
+    3: 'You\'re at the halfway mark. What skills have you developed that you didn\'t expect?',
+    4: 'You\'re past halfway now. Have you taken on anything new recently?',
+    5: 'With just a few weeks left — what difference do you think your work has made?',
+    6: 'This is your final reflection. Looking back at the full 12 weeks, what are you most proud of?',
+  };
+  return openers[fn] || 'What\'s been on your mind about your placement lately?';
+}
 
-  /* Typing indicator */
+function botSays(text) {
+  const win = document.getElementById('chatWindow');
+  if (!win) return;
   const typing = document.createElement('div');
   typing.className = 'typing-indicator';
   typing.innerHTML = '<span></span><span></span><span></span>';
-  chatWindow.appendChild(typing);
-  chatWindow.scrollTop = chatWindow.scrollHeight;
+  win.appendChild(typing);
+  win.scrollTop = win.scrollHeight;
 
+  const delay = GEMINI_API_KEY ? 600 + Math.random() * 400 : 500;
   setTimeout(() => {
     typing.remove();
     const bubble = document.createElement('div');
     bubble.className = 'chat-bubble bot';
-    bubble.innerHTML = `<span class="turn-label">Reflection · Turn ${turnIndex + 1} of 7</span>${text}`;
-    chatWindow.appendChild(bubble);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-  }, 800 + Math.random() * 600);
+    const label = session.turnIndex === MAX_TURNS ? 'Session complete' : `Turn ${session.turnIndex + 1} of ${MAX_TURNS}`;
+    bubble.innerHTML = `<span class="turn-label">${label}</span>${text}`;
+    win.appendChild(bubble);
+    win.scrollTop = win.scrollHeight;
+  }, delay);
 }
 
-/* ── Student response ── */
-function handleStudentResponse(text) {
-  if (!activeSession || !text.trim()) return;
+async function handleResponse(text) {
+  if (!session || !text.trim()) return;
+  const win = document.getElementById('chatWindow');
 
-  const chatWindow = document.getElementById('chatWindow');
-  const turn = activeSession.turnIndex;
-
-  /* Add student bubble */
+  // Student bubble
   const bubble = document.createElement('div');
   bubble.className = 'chat-bubble student';
-  bubble.innerHTML = `<span class="turn-label">You · Turn ${turn + 1}</span>${escapeHtml(text)}`;
-  chatWindow.appendChild(bubble);
-  chatWindow.scrollTop = chatWindow.scrollHeight;
+  bubble.innerHTML = `<span class="turn-label">You</span>${escapeHtml(text)}`;
+  win.appendChild(bubble);
+  win.scrollTop = win.scrollHeight;
 
-  /* Save turn */
-  activeSession.turns.push(
-    { role: 'bot', text: activeSession.bank.questions[turn].text },
-    { role: 'student', text }
-  );
+  session.history.push({ role: 'user', parts: [{ text }] });
+  session.turnIndex++;
+  updateCounter();
 
-  activeSession.turnIndex++;
-  updateTurnCounter();
+  if (session.turnIndex >= MAX_TURNS) { completeSession(); return; }
 
-  /* Check if session complete */
-  if (activeSession.turnIndex >= 7) {
-    completeSession();
-    return;
-  }
-
-  /* Select next question with adaptive branching */
-  const nextQ = activeSession.bank.questions[activeSession.turnIndex];
-  const branch = detectBranch(text, nextQ.branches);
-  const adapted = nextQ.branches[branch] || nextQ.branches.default || nextQ.text;
-
-  botSays(adapted, activeSession.turnIndex);
+  // Generate next question
+  const nextQ = await generateNext(text);
+  session.history.push({ role: 'model', parts: [{ text: nextQ }] });
+  botSays(nextQ);
 }
 
-/* ── Complete session ── */
-function completeSession() {
-  const chatWindow = document.getElementById('chatWindow');
-  const chatInput  = document.getElementById('chatInputRow');
-  const startBtn   = document.getElementById('btnStartReflection');
+async function generateNext(studentText) {
+  if (!GEMINI_API_KEY) return getFallbackQuestion(studentText);
 
-  completedFortnights.add(activeSession.fortnight);
+  try {
+    const turnContext = `This is turn ${session.turnIndex + 1} of ${MAX_TURNS}. ${session.turnIndex === MAX_TURNS - 1 ? 'This is the final turn — give a warm closing summary.' : ''}`;
+    const res = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: `${SYSTEM_PROMPT}\n\nFortnightly theme: "${session.bank.theme}" — ${session.bank.prompt}\n\n${turnContext}` }] },
+        contents: session.history,
+        generationConfig: { temperature: 0.8, maxOutputTokens: 200 },
+      }),
+    });
+    const data = await res.json();
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text || getFallbackQuestion(studentText);
+  } catch (e) {
+    console.warn('[Chatbot] Gemini call failed:', e);
+    return getFallbackQuestion(studentText);
+  }
+}
+
+function getFallbackQuestion(studentText) {
+  const lower = studentText.toLowerCase();
+  if (lower.length < 40) return 'Can you tell me more about that? I\'d love to hear the details.';
+  if (/hard|difficult|struggle|tough|challenge/.test(lower)) return 'That sounds like it was challenging. How did you work through it?';
+  if (/person|name|staff|coordinator|anwar|mentor/.test(lower)) return 'It sounds like that person made an impression. What did you learn from them?';
+  if (/surprise|unexpected|didn.t expect/.test(lower)) return 'That\'s interesting — why do you think that caught you off guard?';
+  if (/learn|skill|develop|improve/.test(lower)) return 'That\'s a valuable skill. Do you see yourself using it beyond this placement?';
+  const generic = [
+    'What made that moment stick with you?',
+    'How has that shaped the way you approach your time there now?',
+    'If you could tell a future volunteer about that, what would you say?',
+    'How does that connect to what you expected going in?',
+  ];
+  return generic[session.turnIndex % generic.length];
+}
+
+function completeSession() {
+  completedFortnights.add(session.fortnight);
+  const closing = session.history.length > 2
+    ? 'Thank you for sharing so openly. Your reflections from this fortnight have been saved and will appear in your scrapbook at the end of the semester.'
+    : 'Thank you for completing this reflection. Your responses have been saved.';
 
   setTimeout(() => {
-    const summary = document.createElement('div');
-    summary.className = 'chat-bubble bot';
-    summary.innerHTML = `<span class="turn-label">Session Complete</span>
-      Thank you for completing your Fortnight ${activeSession.fortnight} reflection.
-      Your responses have been saved. You can review them in your scrapbook at the end of the semester.`;
-    chatWindow.appendChild(summary);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-
-    if (chatInput) chatInput.hidden = true;
-    if (startBtn) {
-      startBtn.style.display = '';
-      startBtn.textContent = 'REFLECTION COMPLETE ✓';
-      startBtn.disabled = true;
-    }
-
+    botSays(closing);
+    const input = document.getElementById('chatInputRow');
+    const btn = document.getElementById('btnStartReflection');
+    if (input) input.hidden = true;
+    if (btn) { btn.style.display = ''; btn.textContent = 'Reflection complete ✓'; btn.disabled = true; }
     renderFortnightGrid();
-    showToast(`Fortnight ${activeSession.fortnight} reflection saved`, 'success');
-    activeSession = null;
-    updateTurnCounter();
-  }, 1200);
+    showToast(`Fortnight ${session.fortnight} reflection saved`, 'success');
+    session = null;
+    updateCounter();
+  }, 800);
 }
 
-/* ── Chat input setup ── */
 function setupChatInput() {
   const input = document.getElementById('chatInput');
-  const send  = document.getElementById('chatSend');
-
-  function submit() {
-    if (!input) return;
-    const text = input.value.trim();
-    if (!text) return;
-    input.value = '';
-    handleStudentResponse(text);
-  }
-
+  const send = document.getElementById('chatSend');
+  const submit = () => { if (!input) return; const t = input.value.trim(); if (!t) return; input.value = ''; handleResponse(t); };
   if (send) send.addEventListener('click', submit);
-  if (input) input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); }
-  });
+  if (input) input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); } });
 }
 
-/* ── Turn counter ── */
-function updateTurnCounter() {
+function updateCounter() {
   const el = document.getElementById('turnCounter');
   if (!el) return;
-  if (activeSession) {
-    el.textContent = `Turn ${activeSession.turnIndex + 1} of 7 · Fortnight ${activeSession.fortnight}: ${activeSession.bank.theme}`;
-  } else {
-    el.textContent = '';
-  }
+  el.textContent = session ? `Turn ${session.turnIndex + 1} of ${MAX_TURNS} · ${session.bank.theme}` : '';
 }
 
-function escapeHtml(str) {
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
-}
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
