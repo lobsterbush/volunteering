@@ -26,11 +26,7 @@ Visit `http://localhost:8000`. Runs in demo mode with mock data by default.
 
 ## Gemini Chatbot
 
-To enable LLM-powered reflections:
-1. Click the ⚙ gear icon in the header
-2. Paste your Gemini API key and click **Save key**
-
-The key is stored in your browser's `localStorage` — it never touches the repository or any server. The Reflect zone shows a green "✦ Gemini active" pill when a key is configured. Without a key, the chatbot falls back to structured keyword-based branching.
+The reflection chatbot uses Google's Gemini 2.0 Flash API for adaptive, context-aware conversations. Without the API key configured, it falls back to structured keyword-based branching.
 
 ## Status
 
